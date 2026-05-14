@@ -1,0 +1,4 @@
+[submodule "2026/Mixed_Potential_Electrical_Double_Layer"]
+	path = 2026/Mixed_Potential_Electrical_Double_Layer
+	url = https://github.com/MoYan-101/Mixed_Potential_Electrical_Double_Layer.git
+	ignore = dirty
