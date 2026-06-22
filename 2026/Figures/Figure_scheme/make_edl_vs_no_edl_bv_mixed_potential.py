@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 RESULT_ID = "20260528_111255"
 SOLVER_DIR = ROOT / "Mixed_Potential_Electrical_Double_Layer"
 PARAMS_PATH = SOLVER_DIR / "results" / RESULT_ID / "params.json"
 SUMMARY_PATH = SOLVER_DIR / "results" / RESULT_ID / "csv" / "summary_compare.csv"
-OUT_DIR = ROOT / "Figures"
+OUT_DIR = Path(__file__).resolve().parent
 
 sys.path.insert(0, str(SOLVER_DIR))
 import Solve_Emix_updating as solver  # noqa: E402

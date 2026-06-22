@@ -26,11 +26,13 @@ FIGRUE_RP_DIR = OUT_BASE / "Figrue_RP"
 L_AU_SAME = 25.0e-9
 L_PD_SAME = 25.0e-9
 I0_GEOM = 1.852573885166257e-4
+OUT_OF_PLANE_WIDTH = 0.01
 PARAM_OVERRIDES = {
     "L_Au": L_AU_SAME,
     "L_Pd_len": L_PD_SAME,
     "it0_1": I0_GEOM,
     "it0_2": I0_GEOM,
+    "out_of_plane_width": OUT_OF_PLANE_WIDTH,
 }
 EXPECTED_IMAGE_COUNT = 16
 
@@ -66,6 +68,7 @@ def validate_same_length_i0_params(params: dict[str, Any]) -> None:
         "L_gap": 10.0e-9,
         "it0_1": I0_GEOM,
         "it0_2": I0_GEOM,
+        "out_of_plane_width": OUT_OF_PLANE_WIDTH,
     }
     for key, expected in checks.items():
         if not math.isclose(float(params[key]), expected, rel_tol=0.0, abs_tol=max(1e-15, abs(expected) * 1e-12)):
@@ -178,6 +181,7 @@ def print_summary(summary: dict[str, str]) -> None:
     print("L_Au = 25 nm")
     print("L_Pd_len = 25 nm")
     print(f"it0_1 = it0_2 = {I0_GEOM:.15g} A/m^2")
+    print("out_of_plane_width = 1 cm")
     print(f"E_mix_with = {float(summary['E_mix_with']):.15g} V")
     print(f"E_mix_no = {float(summary['E_mix_no']):.15g} V")
     print(f"i_mix_avg_with = {float(summary['i_mix_avg_with']):.15g} A/m^2")

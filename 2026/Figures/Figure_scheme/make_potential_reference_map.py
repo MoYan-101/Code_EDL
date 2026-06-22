@@ -7,11 +7,11 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 RESULT_ID = "20260528_111255"
 PARAMS_PATH = ROOT / "Mixed_Potential_Electrical_Double_Layer" / "results" / RESULT_ID / "params.json"
 SUMMARY_PATH = ROOT / "Mixed_Potential_Electrical_Double_Layer" / "results" / RESULT_ID / "csv" / "summary_compare.csv"
-OUT_DIR = ROOT / "Figures"
+OUT_DIR = Path(__file__).resolve().parent
 
 
 PALETTE = {

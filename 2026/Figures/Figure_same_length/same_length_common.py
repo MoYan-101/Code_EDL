@@ -25,7 +25,12 @@ FIGRUE_RP_DIR = OUT_BASE / "Figrue_RP"
 
 L_AU_SAME = 25.0e-9
 L_PD_SAME = 25.0e-9
-LENGTH_OVERRIDES = {"L_Au": L_AU_SAME, "L_Pd_len": L_PD_SAME}
+OUT_OF_PLANE_WIDTH = 0.01
+LENGTH_OVERRIDES = {
+    "L_Au": L_AU_SAME,
+    "L_Pd_len": L_PD_SAME,
+    "out_of_plane_width": OUT_OF_PLANE_WIDTH,
+}
 EXPECTED_IMAGE_COUNT = 16
 
 sys.path.insert(0, str(SOLVER_DIR))
@@ -60,6 +65,8 @@ def validate_same_length_params(params: dict[str, Any]) -> None:
         raise ValueError(f"L_Pd_len should be {L_PD_SAME} m, got {params['L_Pd_len']}")
     if not math.isclose(float(params["L_gap"]), 10.0e-9, rel_tol=0.0, abs_tol=1e-15):
         raise ValueError(f"L_gap should remain 10 nm, got {params['L_gap']}")
+    if not math.isclose(float(params["out_of_plane_width"]), OUT_OF_PLANE_WIDTH, rel_tol=0.0, abs_tol=1e-15):
+        raise ValueError(f"out_of_plane_width should be {OUT_OF_PLANE_WIDTH} m, got {params['out_of_plane_width']}")
 
 
 def compute_same_length_pair() -> dict[str, Any]:
@@ -165,6 +172,7 @@ def print_summary(summary: dict[str, str]) -> None:
     print(f"same-length tag = {OUTPUT_TAG}")
     print("L_Au = 25 nm")
     print("L_Pd_len = 25 nm")
+    print("out_of_plane_width = 1 cm")
     print(f"E_mix_with = {float(summary['E_mix_with']):.15g} V")
     print(f"E_mix_no = {float(summary['E_mix_no']):.15g} V")
     print(f"i_mix_avg_with = {float(summary['i_mix_avg_with']):.15g} A/m^2")

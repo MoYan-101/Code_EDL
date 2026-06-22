@@ -36,6 +36,7 @@
   - `C_tot = 10 mM`
   - `lambda_D = 3.041 nm` auto-calculated
   - `L_Au / L_gap / L_Pd = 11 / 10 / 37 nm`
+  - `out_of_plane_width = 1 cm`（从原先 unit width `1 m` 改为实际宽度；`i_mix_abs_A` 缩小 100 倍，`i_mix_avg_A_per_m2` 不变）
   - `Cdl_Au / Cdl_support / Cdl_Pd = 20 / 10 / 40 uF/cm^2`
   - `pzc_Au / pzc_support / pzc_Pd = 0.93 / 0.50 / 0.78 V`
   - `E1_eq / E2_eq = 0.10 / 0.834 V`
