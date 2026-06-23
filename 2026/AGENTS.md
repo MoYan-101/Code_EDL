@@ -135,6 +135,126 @@
   - 抽查 panel c 和 panel f，图片内部没有 a-f panel 字母。
 - 运行脚本时仍会出现已知 caveat warning：`max |phi_tilde| = 5.40679` 超过 Debye-Huckel 阈值 1；这是当前结果目录的模型适用性提醒，不是导出失败。
 
+## Figures/Figrue_RP/ - Figure 3 条件下的 2D Phi_s/reactants 图
+
+- 当前脚本是 `Figures/Figrue_RP/make_phi_s_reactants_2d.py`。
+- 固定读取：
+  - `Mixed_Potential_Electrical_Double_Layer/results/20260528_111255/params.json`
+  - `Mixed_Potential_Electrical_Double_Layer/results/20260528_111255/csv/summary_compare.csv`
+- 图件参考 Huang et al. 2017 的 Figure 4 风格，但使用本模型 Figure 3 baseline 条件。
+- `Phi_s(x,y)` 的来源：
+  - 复用 `Solve_Emix_updating.EDLModel` 的 linear Debye-Huckel 展开。
+  - `A = A_M * beta * E_mix_with - A_pzc`。
+  - `phi_tilde(x,y) = sum_n A_n cos(rho_n x_tilde) exp(-gamma_n y_tilde)`。
+  - `Phi_s [V] = (RT/F) * phi_tilde`，相对 bulk solution potential `phi_bulk = 0`。
+- reactants 画归一化浓度：
+  - `c_R1/c_bulk = exp(-z_R1 * phi_tilde)`。
+  - `c_O2/c_bulk = exp(-z_O2 * phi_tilde)`。
+- 空间范围：
+  - baseline: `x = 0-58 nm`，Au/support/Pd = `0-11/11-21/21-58 nm`。
+  - `y = 0-5 lambda_D = 0-15.21 nm`。
+- 只导出：
+  - `Figures/Figrue_RP/phi_s_reactants_2d_20260528_111255.png`
+  - `Figures/Figrue_RP/phi_s_reactants_2d_20260528_111255.svg`
+- 已验证 `y=0` 的 `Phi_s(x,0)` 与 Figure 3 panel b 的 `phi_RP(x)` 一致。
+
+## Figures/Figure_same_length/ - Au/Pd 等长图件集
+
+- 目录是 `Figures/Figure_same_length/`，镜像结构：
+  - `Figure_3/`
+  - `Figure_scheme/`
+  - `Figrue_RP/`
+  - `inputs/`
+- 共享 helper：`Figures/Figure_same_length/same_length_common.py`。
+- 参数从 `results/20260528_111255/params.json` 读取，并 override：
+  - `L_Au = 25 nm`
+  - `L_Pd_len = 25 nm`
+  - 其他参数保持 baseline，包括 `L_gap = 10 nm` 和 `C_tot = 10 mM`。
+- 输出 tag：`same_length_au25_pd25_20260528_111255`。
+- 只导出 PNG/SVG，不导出 PDF；`Figure_scheme` 只生成带 PZC 的 EDL vs no-EDL BV 图。
+- 关键结果：
+  - `E_mix_with ≈ 0.6127292792 V`
+  - `E_mix_no ≈ 0.4557694001 V`
+  - `i_mix_avg_with ≈ 0.0608919385 A/m^2`
+  - `i_mix_avg_no ≈ 0.0451292034 A/m^2`
+  - `lambda_D = 3.041217889 nm`
+  - `L_total = 60 nm`
+- 对比 baseline 时，长度变化对 `E_mix` 的影响不大，原因是原 baseline 中 Pd 区域较长且 EDL/frumkin 权重使 Pd cathodic contribution 占优；改成等长后仍保留明显 EDL-induced shift。
+
+## Figures/Figure_same_length_i0/ - Au/Pd 等长 + 等 i0 图件集
+
+- 目录是 `Figures/Figure_same_length_i0/`，镜像结构：
+  - `Figure_3/`
+  - `Figure_scheme/`
+  - `Figrue_RP/`
+  - `inputs/`
+- 共享 helper：`Figures/Figure_same_length_i0/same_length_i0_common.py`。
+- 参数 override：
+  - `L_Au = 25 nm`
+  - `L_Pd_len = 25 nm`
+  - `it0_1 = it0_2 = sqrt(8.85e-5 * 3.878e-4) = 1.852573885166257e-4 A/m^2`
+  - 其他参数保持 baseline。
+- 输出 tag：`same_length_i0_geom_au25_pd25_20260528_111255`。
+- 只导出 PNG/SVG，不导出 PDF；`Figure_scheme` 只生成带 PZC 的 EDL vs no-EDL BV 图。
+- 关键结果：
+  - `E_mix_with ≈ 0.5873998539 V`
+  - `E_mix_no ≈ 0.4121609195 V`
+  - `i_mix_avg_with ≈ 0.0620782271 A/m^2`
+  - `i_mix_avg_no ≈ 0.0404126392 A/m^2`
+  - `max |phi_tilde| ≈ 6.23139`
+
+## Figures/Figure_same_length_i0_alpha/ - Au/Pd 等长 + 等 i0 + alpha=0.5 图件集
+
+- 目录是 `Figures/Figure_same_length_i0_alpha/`，镜像结构：
+  - `Figure_3/`
+  - `Figure_scheme/`
+  - `Figrue_RP/`
+  - `Heatmap/`
+  - `inputs/`
+- 共享 helper：`Figures/Figure_same_length_i0_alpha/same_length_i0_alpha_common.py`。
+- 参数从 `results/20260528_111255/params.json` 读取，并 override：
+  - `L_Au = 25 nm`
+  - `L_Pd_len = 25 nm`
+  - `it0_1 = it0_2 = 1.852573885166257e-4 A/m^2`
+  - `alpha1 = alpha2 = 0.5`
+  - `out_of_plane_width = 0.01 m`
+  - 其他参数保持 baseline，包括 `L_gap = 10 nm`、`C_tot = 10 mM`、PZC、Cdl、charges、pH。
+- 输出 tag：`same_length_i0_alpha050_au25_pd25_20260528_111255`。
+- 一键入口：`Figures/Figure_same_length_i0_alpha/make_all_same_length_i0_alpha.py`。
+- 只导出 PNG/SVG，不导出 PDF；`Figure_scheme` 只生成带 PZC 的 EDL vs no-EDL BV 图。
+- 关键结果：
+  - `E_mix_with = 0.5979829354430014 V`
+  - `E_mix_no = 0.4670000000000001 V`
+  - `i_mix_avg_with = 0.08384634584416407 A/m^2`
+  - `i_mix_avg_no = 0.11756035407872442 A/m^2`
+  - `i_mix_abs_with = 4.192317292208204e-11 A`
+  - `i_mix_abs_no = 5.878017703936221e-11 A`
+  - `lambda_D = 3.041217889 nm`
+  - `max |phi_tilde| = 6.038944611092431`
+- 该条件下即使 `L/i0/alpha` 都相同，with EDL 和 without EDL 的 `E_mix` 仍相差约 `0.131 V`。原因不是几何或 i0，而是 EDL 改变了 reaction-plane potential 和局部反应物浓度：BV 局部过电位含 `E_mix - E_eq - phi_RP(x)`，浓度含 `exp(-z_i * phi_tilde)`，因此 Frumkin/Boltzmann 权重会强烈改变 Au/Pd 两个 half-reaction 的相对强度。
+
+## Figures/Figure_same_length_i0_alpha/Heatmap/ - 等长等 i0 等 alpha baseline 的 heatmap
+
+- 当前脚本是 `Figures/Figure_same_length_i0_alpha/Heatmap/make_heatmap_combined_panel_log_same_length_i0_alpha.py`。
+- 使用 `same_length_i0_alpha_common.py` 读取和校验 baseline，不改 `Solve_Emix_updating.py`。
+- 只生成 log combined panel，不生成 linear 版，不生成 PDF。
+- 主图输出：
+  - `Figures/Figure_same_length_i0_alpha/Heatmap/heatmap_combined_panel_log.png`
+  - `Figures/Figure_same_length_i0_alpha/Heatmap/heatmap_combined_panel_log.svg`
+- 支撑数据：
+  - `Figures/Figure_same_length_i0_alpha/Heatmap/csv/`
+  - 共 30 个 `heatmap_compare_*.csv`。
+  - `inputs/` 中保存该 heatmap 使用的 params、overrides、summary。
+- 三组 25 x 25 扫描：
+  - `pzc_Au × pzc_Pd`：linear，baseline PZC ± `heatmap_pzc_span`。
+  - `Cdl_Au × Cdl_Pd`：log，`heatmap_Cdl_C_min` 到 `heatmap_Cdl_C_max`。
+  - `L_Au × L_Pd_len`：log，`heatmap_L_min` 到 `heatmap_L_max`。
+- 当前 heatmap 的定量结论：
+  - 对 `i_mix_avg_with` 最重要的是 PZC，尤其 `pzc_Pd`；`pzc_Au × pzc_Pd` 扫描中电流约 `0.0039 -> 1.897 A/m^2`，约 `484x`。
+  - 对 `E_mix_with`，PZC 和长度都重要；`pzc_Au × pzc_Pd` 总跨度约 `208 mV`，`L_Au × L_Pd` 总跨度约 `214 mV`。
+  - `Cdl_Au × Cdl_Pd` 影响较次要，但不可忽略；`E_mix_with` 总跨度约 `116 mV`，`i_mix_avg_with` 约 `25x`。
+  - baseline 附近单参数截线中，`pzc_Pd` 对电流最敏感；`pzc_Pd` 改变时 `i_mix` 约 `32x`，`pzc_Au` 约 `15x`，长度单参数约 `3x`。
+
 ## Git 状态记忆
 
 - 曾经清理过工作树：

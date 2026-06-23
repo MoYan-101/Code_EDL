@@ -41,6 +41,11 @@ COLORS = {
     "pzc_au": "#8A6E1D",
 }
 
+SINGLE_PANEL_FIGSIZE = (3.55, 2.75)
+SINGLE_PANEL_AXES_RECT = (0.18, 0.20, 0.78, 0.66)
+PANEL_A_FIGSIZE = (4.05, 2.75)
+PANEL_F_FIGSIZE = (4.20, 3.25)
+
 
 @dataclass(frozen=True)
 class Figure3Data:
@@ -77,6 +82,12 @@ def apply_style() -> None:
             "axes.spines.right": True,
             "axes.linewidth": 0.9,
             "axes.grid": False,
+            "figure.facecolor": "none",
+            "axes.facecolor": "none",
+            "savefig.facecolor": "none",
+            "savefig.edgecolor": "none",
+            "savefig.transparent": True,
+            "savefig.bbox": None,
             "legend.frameon": False,
             "svg.fonttype": "none",
             "pdf.fonttype": 42,
@@ -90,6 +101,21 @@ def apply_style() -> None:
             "mathtext.tt": "Nimbus Sans",
         }
     )
+
+
+def make_transparent(fig: plt.Figure) -> None:
+    fig.patch.set_alpha(0.0)
+    fig.patch.set_facecolor("none")
+    for ax in fig.axes:
+        ax.set_facecolor("none")
+
+
+def make_single_axis_panel() -> tuple[plt.Figure, plt.Axes]:
+    fig = plt.figure(figsize=SINGLE_PANEL_FIGSIZE)
+    fig.patch.set_alpha(0.0)
+    ax = fig.add_axes(SINGLE_PANEL_AXES_RECT)
+    ax.set_facecolor("none")
+    return fig, ax
 
 
 def load_params() -> dict[str, Any]:
@@ -204,6 +230,7 @@ def build_data() -> Figure3Data:
 
 
 def style_axes(ax: plt.Axes, xlabel: str, ylabel: str, title: str) -> None:
+    ax.set_facecolor("none")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(title, loc="left", pad=6, fontsize=9.8, fontweight="normal")
@@ -224,7 +251,8 @@ def save_panel(fig: plt.Figure, stem: str) -> list[Path]:
     paths: list[Path] = []
     for ext in ("png", "svg"):
         path = OUT_DIR / f"{stem}_{RESULT_ID}.{ext}"
-        fig.savefig(path, dpi=600, bbox_inches="tight")
+        make_transparent(fig)
+        fig.savefig(path, dpi=600, transparent=True, facecolor="none", edgecolor="none")
         paths.append(path)
     plt.close(fig)
     return paths
@@ -253,7 +281,8 @@ def plot_panel_a(data: Figure3Data) -> list[Path]:
     (i_mix_plot,), i_label, _ = solver._scaled_current_display("i_mix_avg", values[1])
     i_label = i_label.replace("Average mixed current density, ", "")
 
-    fig, axes = plt.subplots(1, 2, figsize=(4.4, 2.55))
+    fig, axes = plt.subplots(1, 2, figsize=PANEL_A_FIGSIZE)
+    make_transparent(fig)
     labels = ["without EDL", "with EDL"]
     x = np.array([0.0, 1.0], dtype=float)
     colors = [COLORS["without"], COLORS["with"]]
@@ -272,23 +301,22 @@ def plot_panel_a(data: Figure3Data) -> list[Path]:
     axes[1].set_xlim(-0.55, 1.55)
     axes[1].set_ylim(0.0, max(i_mix_plot) * 1.18)
 
-    fig.subplots_adjust(left=0.15, right=0.98, bottom=0.32, top=0.84, wspace=0.78)
+    fig.subplots_adjust(left=0.16, right=0.98, bottom=0.32, top=0.84, wspace=0.60)
     return save_panel(fig, "figure_3_panel_a_emix_imix")
 
 
 def plot_panel_b(data: Figure3Data) -> list[Path]:
-    fig, ax = plt.subplots(figsize=(3.65, 2.55))
+    fig, ax = make_single_axis_panel()
     ax.plot(data.x_nm, data.phi_rp_edl, color=COLORS["with"], linewidth=2.0, label="with EDL", zorder=3)
     ax.plot(data.x_nm, data.phi_rp_no, color=COLORS["without"], linewidth=1.8, label="without EDL", zorder=2)
     add_boundaries(ax, data)
     style_axes(ax, "x [nm]", r"$\phi_{\mathrm{RP}}(x)$ [V]", "Reaction-plane potential")
     ax.legend(loc="upper right", fontsize=8.0, handlelength=2.0)
-    fig.subplots_adjust(left=0.18, right=0.98, bottom=0.20, top=0.86)
     return save_panel(fig, "figure_3_panel_b_reaction_plane_potential")
 
 
 def plot_panel_c(data: Figure3Data) -> list[Path]:
-    fig, ax = plt.subplots(figsize=(3.85, 2.75))
+    fig, ax = make_single_axis_panel()
     ax.plot(
         data.x_nm,
         data.c_r1_norm,
@@ -326,19 +354,17 @@ def plot_panel_c(data: Figure3Data) -> list[Path]:
     ax.set_ylim(float(np.min(positive)) / 1.25, float(np.max(positive)) * 8.0)
     style_axes(ax, "x [nm]", r"$c_i/c_{\mathrm{bulk}}$ [-]", "Local reactant concentration")
     ax.legend(loc="upper right", fontsize=7.1, handlelength=1.7)
-    fig.subplots_adjust(left=0.18, right=0.98, bottom=0.19, top=0.86)
     return save_panel(fig, "figure_3_panel_c_local_reactant_concentration")
 
 
 def plot_panel_d(data: Figure3Data) -> list[Path]:
-    fig, ax = plt.subplots(figsize=(3.65, 2.55))
+    fig, ax = make_single_axis_panel()
     ax.plot(data.x_nm, data.eta_edl, color=COLORS["with"], linewidth=2.0, label="with EDL", zorder=3)
     ax.plot(data.x_nm, data.eta_no, color=COLORS["without"], linewidth=1.8, label="without EDL", zorder=2)
     add_boundaries(ax, data)
     style_axes(ax, "x [nm]", solver._plot_axis_label("overpotential"), "Local overpotential")
     finite_ylim(ax, data.eta_edl, data.eta_no, pad_frac=0.08)
     ax.legend(loc="center right", fontsize=8.0, handlelength=2.0)
-    fig.subplots_adjust(left=0.18, right=0.98, bottom=0.20, top=0.86)
     return save_panel(fig, "figure_3_panel_d_local_overpotential")
 
 
@@ -352,7 +378,7 @@ def plot_panel_e(data: Figure3Data) -> list[Path]:
     )
     i_label = i_label.replace("Local current density, ", "")
 
-    fig, ax = plt.subplots(figsize=(4.05, 2.75))
+    fig, ax = make_single_axis_panel()
     ax.plot(data.x_nm, i1_edl, color=COLORS["with"], linewidth=2.0, label=r"$i_1$ (Au), with EDL", zorder=4)
     ax.plot(data.x_nm, i2_edl, color=COLORS["with_alt"], linewidth=2.0, label=r"$i_2$ (Pd), with EDL", zorder=4)
     ax.plot(
@@ -377,7 +403,6 @@ def plot_panel_e(data: Figure3Data) -> list[Path]:
     style_axes(ax, "x [nm]", i_label, "Local current density")
     finite_ylim(ax, i1_edl, i1_no, i2_edl, i2_no, pad_frac=0.08)
     ax.legend(loc="upper right", fontsize=7.0, handlelength=1.8)
-    fig.subplots_adjust(left=0.17, right=0.98, bottom=0.19, top=0.86)
     return save_panel(fig, "figure_3_panel_e_local_current_density")
 
 
@@ -398,7 +423,7 @@ def add_reference_marker(
     linestyle: str | tuple[int, tuple[int, ...]] = "-",
 ) -> None:
     ax.vlines(x, y - 0.09, y + 0.09, color=color, linewidth=linewidth, linestyle=linestyle, zorder=2)
-    ax.scatter([x], [y], s=72, marker=marker, color=color, edgecolor="white", linewidth=0.7, zorder=4)
+    ax.scatter([x], [y], s=72, marker=marker, color=color, edgecolor="none", linewidth=0.0, zorder=4)
     ax.text(
         x + text_x_offset,
         y + text_y_offset,
@@ -422,9 +447,10 @@ def plot_panel_f(data: Figure3Data) -> list[Path]:
         "pzc_Au": float(data.params["pzc_Au"]),
     }
 
-    fig, ax = plt.subplots(figsize=(5.45, 2.75))
+    fig, ax = plt.subplots(figsize=PANEL_F_FIGSIZE)
+    make_transparent(fig)
     xmin, xmax = 0.0, 1.0
-    lane_y = {"eq": 0.30, "mix": 0.00, "pzc": -0.30}
+    lane_y = {"eq": 0.42, "mix": 0.00, "pzc": -0.42}
     ax.hlines(0.0, xmin, xmax, color=COLORS["dark"], linewidth=1.1, zorder=1)
 
     add_reference_marker(ax, values["E1_eq"], lane_y["eq"], r"$E_{1,\mathrm{eq}}$", COLORS["gray"], "o", 0.12)
@@ -438,8 +464,7 @@ def plot_panel_f(data: Figure3Data) -> list[Path]:
         "D",
         -0.15,
         text_x_offset=-0.070,
-        linewidth=1.5,
-        linestyle=(0, (4, 2)),
+        linewidth=2.0,
     )
     add_reference_marker(
         ax,
@@ -449,7 +474,7 @@ def plot_panel_f(data: Figure3Data) -> list[Path]:
         COLORS["with"],
         "D",
         0.13,
-        linewidth=2.2,
+        linewidth=2.0,
     )
     add_reference_marker(
         ax,
@@ -469,7 +494,7 @@ def plot_panel_f(data: Figure3Data) -> list[Path]:
     ax.text(-0.015, lane_y["pzc"], "PZC", ha="right", va="center", fontsize=7.7, color=COLORS["dark"])
 
     ax.set_xlim(xmin - 0.07, xmax + 0.02)
-    ax.set_ylim(-0.73, 0.64)
+    ax.set_ylim(-0.92, 0.80)
     ax.set_xlabel("Potential vs RHE (V)")
     ax.set_yticks([])
     ax.set_xticks([0.0, 0.25, 0.50, 0.75, 1.0])
@@ -477,9 +502,9 @@ def plot_panel_f(data: Figure3Data) -> list[Path]:
     ax.set_title("Potential reference map", loc="left", fontsize=9.8, pad=6, fontweight="normal")
     for side in ("left", "right", "top"):
         ax.spines[side].set_visible(False)
-    ax.spines["bottom"].set_position(("data", -0.58))
+    ax.spines["bottom"].set_position(("data", -0.72))
     ax.spines["bottom"].set_linewidth(0.9)
-    fig.subplots_adjust(left=0.16, right=0.985, bottom=0.20, top=0.86)
+    fig.subplots_adjust(left=0.18, right=0.985, bottom=0.17, top=0.89)
     return save_panel(fig, "figure_3_panel_f_pzc_potential_reference_map")
 
 

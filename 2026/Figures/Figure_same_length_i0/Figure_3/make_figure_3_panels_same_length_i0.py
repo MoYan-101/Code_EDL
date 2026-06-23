@@ -16,7 +16,7 @@ from Figures.Figure_3 import make_figure_3_panels as base  # noqa: E402
 
 
 def plot_panel_c_same_length_i0(data: Any) -> list[Path]:
-    fig, ax = base.plt.subplots(figsize=(3.85, 2.95))
+    fig, ax = base.make_single_axis_panel()
     ax.plot(
         data.x_nm,
         data.c_r1_norm,
@@ -60,7 +60,6 @@ def plot_panel_c_same_length_i0(data: Any) -> list[Path]:
         ncols=1,
         borderaxespad=0.0,
     )
-    fig.subplots_adjust(left=0.18, right=0.98, bottom=0.17, top=0.84)
     return base.save_panel(fig, "figure_3_panel_c_local_reactant_concentration")
 
 
