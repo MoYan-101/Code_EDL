@@ -190,7 +190,13 @@ def style_map_axis(ax: plt.Axes, title: str, show_xlabel: bool = False) -> None:
 
 
 def add_region_boundaries(ax: plt.Axes, data: RP2DData) -> None:
+    positions: list[float] = []
     for xpos in (data.L_Au_nm, data.L_C_nm):
+        if xpos <= 0.0 or xpos >= data.L_total_nm:
+            continue
+        if not any(math.isclose(xpos, existing, rel_tol=0.0, abs_tol=1e-9) for existing in positions):
+            positions.append(xpos)
+    for xpos in positions:
         ax.axvline(xpos, linestyle=(0, (3, 2)), linewidth=0.8, color=COLORS["gray"], alpha=0.8, zorder=5)
 
 
@@ -215,6 +221,8 @@ def add_material_lane(ax: plt.Axes, data: RP2DData) -> None:
         ("Pd", data.L_C_nm, data.L_total_nm, COLORS["pd"], "white"),
     ]
     for label, x0, x1, face, text_color in segments:
+        if x1 - x0 <= 1e-9:
+            continue
         ax.add_patch(Rectangle((x0, 0.0), x1 - x0, 1.0, facecolor=face, edgecolor="white", linewidth=0.8))
         ax.text((x0 + x1) / 2.0, 0.5, label, ha="center", va="center", fontsize=8.3, color=text_color)
     ax.set_xlim(0.0, data.L_total_nm)

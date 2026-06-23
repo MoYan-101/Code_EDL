@@ -8,6 +8,11 @@
 - 这里有一个外层 git repo，`Mixed_Potential_Electrical_Double_Layer/` 是内层 git submodule/repo。
 - 不要误删或覆盖用户的 Word/Illustrator 文件。`MS/` 已在外层 repo 的本地 `.git/info/exclude` 里忽略；`Figures/Figure_1_v2.ai` 是用户打开的 AI 文件，不要碰，除非用户明确要求。
 - 用户偏好：中文交流；代码/图件修改后给出具体路径；结果参数要能追溯到结果目录。
+- 画图 skill 使用约定：
+  - 普通 matplotlib 数据图、bar/line/heatmap/multi-panel 优先用 `scientific-figure-making`。
+  - 只有用户明确要求 “Nature-style chemistry figure / 用 nature 风格出图 / chemistry paper figure” 时再用 `chem-figure-style`。
+  - `imagegen` 只用于生成/编辑位图插图，不替代科研数据图。
+- 项目图件字体统一标准：优先使用 `Helvetica, Nimbus Sans, Arial, DejaVu Sans, sans-serif`。SVG 保留 Helvetica-first 字体栈；本机 PNG 若无 Helvetica 则用 Nimbus Sans/Arial/DejaVu Sans。
 
 ## Mixed_Potential_Electrical_Double_Layer/ - 模型代码与结果
 
@@ -27,6 +32,10 @@
   - 默认参数仍能通过 `validate_params()` 和 `compute_derived_params()`。
   - `lambda_D/epsilon_s/g_* = nan/inf/-inf` 会抛 `ValueError`。
   - `python3 -m py_compile Mixed_Potential_Electrical_Double_Layer/Solve_Emix_updating.py` 通过。
+- 已更新线性 solver 的 with/without EDL 对比配色，使其与 `Figures/Figure_3/` 保持一致：
+  - `with EDL`：亮暖色 `#F26B38`，辅助暖色 `#D83A2E` / `#F2B134`。
+  - `without EDL`：暗冷色 `#12355B`，辅助冷色 `#2D5A7B`。
+  - 适用于 compare 图、publication compare panels、OFAT 对比图；heatmap 连续 colormap 保持不变。
 
 ## Mixed_Potential_Electrical_Double_Layer/result_parameter_memory.md - 结果参数记忆
 
@@ -59,6 +68,10 @@
 - 关键平均混合电流密度：
   - `i_mix_avg_with = 0.05449754430614139 A/m^2`
   - `i_mix_avg_no = 0.04153392038470155 A/m^2`
+- 该目录下 PNG 图已按 Figure 3 逻辑重画配色：
+  - `with EDL` 为亮橙红。
+  - `without EDL` 为深蓝。
+  - 已重画 baseline profiles、main/with_edl/no_edl compare 图和 66 个 OFAT PNG；heatmap PNG 未改连续 colormap。
 - 图中电压标注按用户要求保留两位小数。
 
 ## Figures/ - 手动图件与导出图
@@ -157,6 +170,41 @@
   - `Figures/Figrue_RP/phi_s_reactants_2d_20260528_111255.png`
   - `Figures/Figrue_RP/phi_s_reactants_2d_20260528_111255.svg`
 - 已验证 `y=0` 的 `Phi_s(x,0)` 与 Figure 3 panel b 的 `phi_RP(x)` 一致。
+- `make_phi_s_reactants_2d.py` 已兼容 `support=0 nm` 的零宽 support：材料 lane 会跳过零宽 support 标签，区域边界会去重。
+
+## Figures/Figrue_RP/Figure_same_length_i0_alpha/ - 等长等 i0 等 alpha 的 RP 2D 汇总
+
+- 当前脚本是 `Figures/Figrue_RP/Figure_same_length_i0_alpha/make_phi_s_reactants_2d_same_length_i0_alpha_collection.py`。
+- 脚本复用：
+  - `Figures/Figure_same_length_i0_alpha/same_length_i0_alpha_common.py`
+  - `Figures/Figrue_RP/make_phi_s_reactants_2d.py`
+- 该目录集中保存 `Figure_same_length_i0_alpha/Figrue_RP` 条件的 RP 2D 图，并额外生成 `support=0 nm` 版本。
+- baseline same_length_i0_alpha 条件：
+  - `L_Au / L_gap / L_Pd_len = 25 / 10 / 25 nm`
+  - 输出 tag：`same_length_i0_alpha050_au25_pd25_20260528_111255`
+  - `E_mix_with = 0.5979829354430014 V`
+  - `i_mix_avg_with = 0.08384634584416407 A/m^2`
+  - 输出：
+    - `Figures/Figrue_RP/Figure_same_length_i0_alpha/phi_s_reactants_2d_same_length_i0_alpha050_au25_pd25_20260528_111255.png/svg`
+- support=0 nm 条件：
+  - `L_Au / L_gap / L_Pd_len = 25 / 0 / 25 nm`
+  - 其他参数保持 same_length_i0_alpha，包括等 i0、`alpha1 = alpha2 = 0.5`、PZC、Cdl、charges、pH。
+  - 输出 tag：`same_length_i0_alpha050_au25_pd25_support0_20260528_111255`
+  - `E_mix_with = 0.600693745661775 V`
+  - `E_mix_no = 0.4670000000000001 V`
+  - `i_mix_avg_with = 0.08160442531462271 A/m^2`
+  - `i_mix_avg_no = 0.11756035407872442 A/m^2`
+  - `i_mix_abs_with = 4.080221265731136e-11 A`
+  - `i_mix_abs_no = 5.878017703936221e-11 A`
+  - `max |phi_tilde| = 5.985937034969025`
+  - 输出：
+    - `Figures/Figrue_RP/Figure_same_length_i0_alpha/phi_s_reactants_2d_same_length_i0_alpha050_au25_pd25_support0_20260528_111255.png/svg`
+- support 长度影响结论：在该 same_length_i0_alpha 条件下，从 `L_gap = 10 nm` 改成 `0 nm` 对结果影响很小：
+  - `E_mix_with` 从 `0.5979829354 V` 到 `0.6006937457 V`，约 `+2.71 mV`。
+  - `i_mix_avg_with` 从 `0.0838463458` 到 `0.0816044253 A/m^2`，约 `-2.7%`。
+  - 远小于 EDL 本身造成的 `E_mix` shift（约 `0.131-0.134 V`）。
+- 该目录的 `inputs/` 保存两组图对应的 `params_*.json`、`overrides_*.json`、`summary_compare_*.csv/json`，用于追溯参数。
+- 已验证：脚本运行成功，输出 2 PNG + 2 SVG + 0 PDF；support=0 图中底部材料 lane 只显示 Au/Pd，中间 25 nm 处相接。
 
 ## Figures/Figure_same_length/ - Au/Pd 等长图件集
 
@@ -221,7 +269,12 @@
   - 其他参数保持 baseline，包括 `L_gap = 10 nm`、`C_tot = 10 mM`、PZC、Cdl、charges、pH。
 - 输出 tag：`same_length_i0_alpha050_au25_pd25_20260528_111255`。
 - 一键入口：`Figures/Figure_same_length_i0_alpha/make_all_same_length_i0_alpha.py`。
-- 只导出 PNG/SVG，不导出 PDF；`Figure_scheme` 只生成带 PZC 的 EDL vs no-EDL BV 图。
+- 只导出 PNG/SVG，不导出 PDF；`Figure_scheme` 原有带 PZC 的 EDL vs no-EDL BV 图，另有单独解释性 schematic PNG。
+- EDL 使 `E_mix` 上升但 `i_mix` 下降的解释性 schematic：
+  - 脚本：`Figures/Figure_same_length_i0_alpha/Figure_scheme/make_emix_up_imix_down_schematic_same_length_i0_alpha.py`
+  - 输出：`Figures/Figure_same_length_i0_alpha/Figure_scheme/emix_up_imix_down_schematic_same_length_i0_alpha050_au25_pd25_20260528_111255.png`
+  - 只输出 PNG，不输出 SVG/PDF。
+  - 当前版本只保留单 panel：BV mixed-potential balance 曲线，标注 `E_mix` 从 `0.47 V` 上移到 `0.60 V`，同时 balanced `|i|` 从 `0.118` 降到 `0.084 A/m^2`。
 - 关键结果：
   - `E_mix_with = 0.5979829354430014 V`
   - `E_mix_no = 0.4670000000000001 V`
@@ -254,6 +307,49 @@
   - 对 `E_mix_with`，PZC 和长度都重要；`pzc_Au × pzc_Pd` 总跨度约 `208 mV`，`L_Au × L_Pd` 总跨度约 `214 mV`。
   - `Cdl_Au × Cdl_Pd` 影响较次要，但不可忽略；`E_mix_with` 总跨度约 `116 mV`，`i_mix_avg_with` 约 `25x`。
   - baseline 附近单参数截线中，`pzc_Pd` 对电流最敏感；`pzc_Pd` 改变时 `i_mix` 约 `32x`，`pzc_Au` 约 `15x`，长度单参数约 `3x`。
+
+## Figures/Figure_scan/ - 等长等 i0 等 alpha baseline 的完整扫描图
+
+- 当前脚本是 `Figures/Figure_scan/make_scan_figures_same_length_i0_alpha.py`。
+- baseline 使用 `Figures/Figure_same_length_i0_alpha/same_length_i0_alpha_common.py`：
+  - `L_Au / L_gap / L_Pd_len = 25 / 10 / 25 nm`
+  - `it0_1 = it0_2 = 1.852573885166257e-4 A/m^2`
+  - `alpha1 = alpha2 = 0.5`
+  - 输出 tag：`same_length_i0_alpha050_au25_pd25_20260528_111255`
+- 参考 `Mixed_Potential_Electrical_Double_Layer/results/20260528_111255/figures/` 的扫描图生成逻辑，只保留 PNG，不生成 SVG/PDF。
+- 图件输出在 `Figures/Figure_scan/figures/`：
+  - 66 个 OFAT PNG：22 个参数，每个参数包含 `E_mix`、`i_mix_avg_A_per_m2` 和 combined 三张图。
+  - 2 个 combined heatmap PNG：`heatmap_combined_panel_log.png` 和 `heatmap_combined_panel_linear.png`。
+  - 已验证输出为 68 PNG + 0 SVG + 0 PDF。
+- 支撑数据：
+  - `Figures/Figure_scan/params.json`
+  - `Figures/Figure_scan/inputs/params_same_length_i0_alpha050_au25_pd25_20260528_111255.json`
+  - `Figures/Figure_scan/inputs/overrides_same_length_i0_alpha050_au25_pd25_20260528_111255.json`
+  - `Figures/Figure_scan/inputs/summary_compare_same_length_i0_alpha050_au25_pd25_20260528_111255.csv/json`
+  - `Figures/Figure_scan/csv/` 保存 OFAT CSV、log/linear heatmap CSV、`summary_compare.csv/json` 和 `results_summary.csv`。
+- 关键 baseline 数值：
+  - `E_mix_with = 0.5979829354430014 V`
+  - `E_mix_no = 0.4670000000000001 V`
+  - `i_mix_avg_with = 0.08384634584416407 A/m^2`
+  - `i_mix_avg_no = 0.11756035407872442 A/m^2`
+
+## Figures/Figure_5/ - 原 Figure_4 改名后的 heatmap/mechanism 图件
+
+- 用户要求把 `Figures/Figure_4/` 改成 `Figures/Figure_5/`，并连带目录下图片改名。
+- 目录结构：
+  - `Heatmap/`
+  - `Mechanism/`
+- `Heatmap/` 下的图片文件名本来不含 `figure_4`，现在路径改为：
+  - `Figures/Figure_5/Heatmap/heatmap_combined_panel_log.png`
+  - `Figures/Figure_5/Heatmap/heatmap_combined_panel_log.svg`
+- `Heatmap/` 脚本是 `Figures/Figure_5/Heatmap/make_heatmap_combined_panel_log_same_length_i0_alpha.py`，已修正为从 `Figures/Figure_same_length_i0_alpha/same_length_i0_alpha_common.py` 读取 helper，并输出到当前 `Figure_5/Heatmap/`。
+- `Mechanism/` 下脚本已从 `make_figure_4_process_gradients.py` 改为 `make_figure_5_process_gradients.py`。
+- `Mechanism/` 下所有 `figure_4_*` 输出已改为 `figure_5_*`，并重新运行脚本使图内可见标题也从 Figure 4 改为 Figure 5。
+- `Figures/Figure_5/Mechanism/` 当前输出：
+  - 5 个 `figure_5_*.png`
+  - 5 个 `figure_5_*.svg`
+  - `csv/` 下 3 个 `figure_5_*.csv`
+- 已验证：`Figures/Figure_5/` 下无 `Figure_4`/`figure_4`/`Figure 4` 残留，无 PDF 输出。
 
 ## Git 状态记忆
 
