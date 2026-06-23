@@ -274,7 +274,9 @@
   - 脚本：`Figures/Figure_same_length_i0_alpha/Figure_scheme/make_emix_up_imix_down_schematic_same_length_i0_alpha.py`
   - 输出：`Figures/Figure_same_length_i0_alpha/Figure_scheme/emix_up_imix_down_schematic_same_length_i0_alpha050_au25_pd25_20260528_111255.png`
   - 只输出 PNG，不输出 SVG/PDF。
-  - 当前版本只保留单 panel：BV mixed-potential balance 曲线，标注 `E_mix` 从 `0.47 V` 上移到 `0.60 V`，同时 balanced `|i|` 从 `0.118` 降到 `0.084 A/m^2`。
+  - 当前版本只保留单 panel，没有左上角 `a` panel 标题。
+  - 图例文字为 `Oxidation on Au, with EDL`、`Reduction on Pd, with EDL`、`Oxidation on Au, no EDL`、`Reduction on Pd, no EDL`。
+  - 图中用单向箭头标注 `E_mix` 从 `0.47 V` 上移到 `0.60 V`，并用 `$i_{\mathrm{mix}}$ drops` 标注 `|i|` 从 `0.118` 降到 `0.084 A/m^2`。
 - 关键结果：
   - `E_mix_with = 0.5979829354430014 V`
   - `E_mix_no = 0.4670000000000001 V`
