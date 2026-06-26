@@ -30,6 +30,8 @@ OUT_PATH = (
     common.FIGURE_SCHEME_DIR
     / f"emix_up_imix_down_schematic_{common.OUTPUT_TAG}.png"
 )
+CURRENT_SCALE = 1e9
+CURRENT_UNIT = r"10$^{-3}$ uA"
 
 
 def apply_style() -> None:
@@ -62,6 +64,15 @@ def segment_average(values: np.ndarray, x: np.ndarray, mask: np.ndarray) -> floa
     if width <= 0.0:
         return float(np.nanmean(y_seg))
     return float(np.trapz(y_seg, x_seg) / width)
+
+
+def single_period_reactive_area(params: dict[str, Any]) -> float:
+    reactive_length = float(params["L_Au"]) + float(params["L_Pd_len"])
+    return reactive_length * float(params.get("out_of_plane_width", 1.0))
+
+
+def current_density_to_display_current(params: dict[str, Any], current_density: np.ndarray | float) -> np.ndarray:
+    return np.asarray(current_density, dtype=float) * single_period_reactive_area(params) * CURRENT_SCALE
 
 
 def compute_explanation_values(params: dict[str, Any], summary: dict[str, str]) -> dict[str, float]:
@@ -141,7 +152,18 @@ def plot_polarization_panel(
     assert_mixed_current("with EDL", i_au_with, i_pd_with, values["i_mix_avg_with"])
     assert_mixed_current("no EDL", i_au_no, i_pd_no, values["i_mix_avg_no"])
 
-    y_limit = max(0.13, 2.25 * max(values["i_mix_avg_with"], values["i_mix_avg_no"]))
+    au_edl = current_density_to_display_current(params, au_edl)
+    pd_edl = current_density_to_display_current(params, pd_edl)
+    au_no = current_density_to_display_current(params, au_no)
+    pd_no = current_density_to_display_current(params, pd_no)
+    i_au_with = float(current_density_to_display_current(params, i_au_with))
+    i_pd_with = float(current_density_to_display_current(params, i_pd_with))
+    i_au_no = float(current_density_to_display_current(params, i_au_no))
+    i_pd_no = float(current_density_to_display_current(params, i_pd_no))
+    i_mix_with = float(current_density_to_display_current(params, values["i_mix_avg_with"]))
+    i_mix_no = float(current_density_to_display_current(params, values["i_mix_avg_no"]))
+
+    y_limit = 2.25 * max(i_mix_with, i_mix_no)
     no_edl_style = (0, (4, 3))
 
     ax.plot(e_values, au_edl, color=PALETTE["green"], linewidth=2.1, label="Oxidation on Au, with EDL")
@@ -206,14 +228,14 @@ def plot_polarization_panel(
 
     ax.annotate(
         "",
-        xy=(e_max - 0.03, values["i_mix_avg_with"]),
-        xytext=(e_max - 0.03, values["i_mix_avg_no"]),
+        xy=(e_max - 0.03, i_mix_with),
+        xytext=(e_max - 0.03, i_mix_no),
         arrowprops=dict(arrowstyle="->", color=PALETTE["dark"], linewidth=1.05),
     )
     ax.text(
         e_max - 0.02,
-        0.5 * (values["i_mix_avg_with"] + values["i_mix_avg_no"]),
-        r"$i_{\mathrm{mix}}$ drops",
+        0.5 * (i_mix_with + i_mix_no),
+        r"$I_{\mathrm{mix}}$ drops",
         ha="left",
         va="center",
         fontsize=7.7,
@@ -224,7 +246,7 @@ def plot_polarization_panel(
     ax.text(
         values["E_mix_with"] + 0.012,
         0.56 * y_limit,
-        rf"with EDL: {fmt_v(values['E_mix_with'])}, $|i|={values['i_mix_avg_with']:.3f}$",
+        rf"with EDL: {fmt_v(values['E_mix_with'])}, $|I|={i_mix_with:.3f}$ {CURRENT_UNIT}",
         ha="left",
         va="center",
         fontsize=7.7,
@@ -233,7 +255,7 @@ def plot_polarization_panel(
     ax.text(
         values["E_mix_no"] - 0.012,
         -0.50 * y_limit,
-        rf"no EDL: {fmt_v(values['E_mix_no'])}, $|i|={values['i_mix_avg_no']:.3f}$",
+        rf"no EDL: {fmt_v(values['E_mix_no'])}, $|I|={i_mix_no:.3f}$ {CURRENT_UNIT}",
         ha="right",
         va="center",
         fontsize=7.7,
@@ -242,8 +264,8 @@ def plot_polarization_panel(
 
     ax.set_xlim(e_min, e_max)
     ax.set_ylim(-y_limit, y_limit)
-    ax.set_xlabel("Potential vs RHE (V)")
-    ax.set_ylabel(r"Average half-reaction current density (A m$^{-2}$)")
+    ax.set_xlabel("Potential (V vs. RHE)")
+    ax.set_ylabel(f"Current ({CURRENT_UNIT})")
     ax.tick_params(length=3.2, width=0.85, labelsize=8.0)
     ax.set_title(r"Mixed-potential balance", loc="left", fontsize=9.7, pad=5)
     ax.legend(loc="upper left", fontsize=6.6, handlelength=2.5, ncols=2, columnspacing=0.85)

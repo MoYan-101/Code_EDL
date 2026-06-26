@@ -144,7 +144,7 @@ def main() -> None:
 
     ax.set_xlim(xmin - 0.05, xmax + 0.02)
     ax.set_ylim(-0.72, 0.62)
-    ax.set_xlabel("Potential vs RHE (V)")
+    ax.set_xlabel("Potential (V vs. RHE)")
     ax.set_yticks([])
     ax.set_xticks([0.0, 0.25, 0.50, 0.75, 1.0])
     ax.tick_params(axis="x", length=4, width=1.0)

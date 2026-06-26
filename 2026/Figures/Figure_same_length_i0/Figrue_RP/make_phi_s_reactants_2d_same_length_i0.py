@@ -41,7 +41,7 @@ def plot_phi_s_reactants_same_length_i0(data: Any) -> list[Path]:
         data.phi_s_mV,
         cmap="RdBu_r",
         norm=base.TwoSlopeNorm(vmin=-phi_vlim, vcenter=0.0, vmax=phi_vlim),
-        cbar_label=r"$\Phi_s$ [mV]",
+        cbar_label=r"$\Phi_s$ (mV)",
         title=rf"Solution phase potential, $E_{{\mathrm{{mix}}}}$ = {float(data.res_edl['E_mix']):.2f} V",
         contour_levels=phi_levels,
     )

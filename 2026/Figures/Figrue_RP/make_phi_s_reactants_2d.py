@@ -176,9 +176,9 @@ def build_2d_data(n_y: int = 320) -> RP2DData:
 
 
 def style_map_axis(ax: plt.Axes, title: str, show_xlabel: bool = False) -> None:
-    ax.set_ylabel("y [nm]")
+    ax.set_ylabel("y (nm)")
     if show_xlabel:
-        ax.set_xlabel("x [nm]")
+        ax.set_xlabel("x (nm)")
     else:
         ax.tick_params(labelbottom=False)
     ax.set_title(title, loc="left", pad=5, fontsize=9.6, fontweight="normal")
@@ -296,7 +296,7 @@ def plot_phi_s_reactants(data: RP2DData) -> list[Path]:
         data.phi_s_mV,
         cmap="RdBu_r",
         norm=TwoSlopeNorm(vmin=-phi_vlim, vcenter=0.0, vmax=phi_vlim),
-        cbar_label=r"$\Phi_s$ [mV]",
+        cbar_label=r"$\Phi_s$ (mV)",
         title=rf"Solution phase potential, $E_{{\mathrm{{mix}}}}$ = {float(data.res_edl['E_mix']):.2f} V",
         contour_levels=phi_levels,
     )

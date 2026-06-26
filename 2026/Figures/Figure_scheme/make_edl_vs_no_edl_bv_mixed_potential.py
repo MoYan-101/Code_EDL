@@ -349,7 +349,7 @@ def main() -> None:
 
     ax.set_xlim(e_min, e_max)
     ax.set_ylim(-y_limit, y_limit)
-    ax.set_xlabel("Potential vs RHE (V)", fontsize=9.0)
+    ax.set_xlabel("Potential (V vs. RHE)", fontsize=9.0)
     ax.set_ylabel(r"Average half-reaction current density (A m$^{-2}$)", fontsize=9.0)
     ax.set_xticks([0.10, 0.30, 0.50, 0.70, 0.90])
     ax.tick_params(axis="both", length=3.2, width=0.85, labelsize=8.0)

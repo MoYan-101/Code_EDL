@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import json
 import math
+import re
 import sys
 from collections.abc import Callable
 from pathlib import Path
@@ -29,6 +30,23 @@ PNG_OUT = HEATMAP_DIR / "heatmap_combined_panel_log.png"
 SVG_OUT = HEATMAP_DIR / "heatmap_combined_panel_log.svg"
 EXPECTED_CSV_PER_SCAN = 10
 SCAN_TAGS = ("pzcAu_vs_pzcPd", "CdlAu_vs_CdlPd", "LAu_vs_LPd")
+
+
+def units_to_parentheses(label: str) -> str:
+    return re.sub(r"\s+\[([^\]]+)\]", r" (\1)", label)
+
+
+def apply_unit_label_style() -> None:
+    for labels in (solver.PLOT_AXIS_LABELS, solver.PARAM_AXIS_LABELS):
+        for key, label in list(labels.items()):
+            labels[key] = units_to_parentheses(label)
+
+    original_style_heatmap_colorbar = solver._style_heatmap_colorbar
+
+    def style_heatmap_colorbar_with_parentheses(cbar: Any, label: str, *args: Any, **kwargs: Any) -> Any:
+        return original_style_heatmap_colorbar(cbar, units_to_parentheses(label), *args, **kwargs)
+
+    solver._style_heatmap_colorbar = style_heatmap_colorbar_with_parentheses
 
 
 def ensure_heatmap_dirs() -> None:
@@ -288,6 +306,7 @@ def assert_figure_outputs() -> None:
 
 
 def main() -> None:
+    apply_unit_label_style()
     ensure_heatmap_dirs()
     params, summary = common.load_inputs_for_scripts()
     assert_baseline(params, summary)

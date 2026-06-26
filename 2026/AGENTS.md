@@ -13,14 +13,22 @@
   - 只有用户明确要求 “Nature-style chemistry figure / 用 nature 风格出图 / chemistry paper figure” 时再用 `chem-figure-style`。
   - `imagegen` 只用于生成/编辑位图插图，不替代科研数据图。
 - 项目图件字体统一标准：优先使用 `Helvetica, Nimbus Sans, Arial, DejaVu Sans, sans-serif`。SVG 保留 Helvetica-first 字体栈；本机 PNG 若无 Helvetica 则用 Nimbus Sans/Arial/DejaVu Sans。
+- 电位横轴统一写法优先用 `Potential (V vs. RHE)`，不要再写 `Potential vs RHE (V)`。
+- `Figures/` 下图件的坐标轴、colorbar 和图面单位统一用圆括号，例如 `x (nm)`、`Phi_s (mV)`、`Current (10^-3 uA)`；不要在图面单位中使用方括号。
 
 ## Mixed_Potential_Electrical_Double_Layer/ - 模型代码与结果
 
 - 主线性求解文件是 `Solve_Emix_updating.py`。
 - `Solve_Emix_nonlinearPB.py` 是 nonlinear PB 版本；之前 review 时用户明确说“不用看 nonlinear part”。
 - 线性模型核心包括 Debye-Huckel/linearized PB, Stern/linear charging BC, Frumkin-corrected Butler-Volmer kinetics, and mixed-potential root solve。
+- mixed potential 的根本判据是绝对电流平衡 `I_Au + I_Pd = 0`，不是分别按不同电极面积归一化后的 current density 相等。画 mixed-potential balance 图时优先用绝对电流；若使用 current density，必须明确是用同一个总 reactive area 做共同归一化，不能用 Au/Pd 各自面积归一化后找交点。
 - 之前 review 的结论：主线性方程符号大体自洽；闭式解和 root solve 在默认参数下能对到机器精度；均一边界条件会退化到解析常数解。
 - 重要 caveat：默认参数下 Debye-Huckel 适用性可能超限，self-check 曾给 `max |phi_tilde| = 5.4068`，高于默认阈值 1。
+- `compare_figure_parameters_and_methods.md` 的 baseline 已改为 `Figures/Figure_same_length_i0_alpha` 使用的参数，而不是原始 `results/20260528_111255/params.json` baseline：
+  - 参数来源：`../Figures/Figure_same_length_i0_alpha/inputs/params_same_length_i0_alpha050_au25_pd25_20260528_111255.json`。
+  - summary 来源：`../Figures/Figure_same_length_i0_alpha/inputs/summary_compare_same_length_i0_alpha050_au25_pd25_20260528_111255.csv`。
+  - baseline 为 `L_Au/L_gap/L_Pd_len = 25/10/25 nm`、`it0_1=it0_2=1.852573885166257e-4 A/m^2`、`alpha1=alpha2=0.5`、`out_of_plane_width=0.01 m`。
+  - 文档中的 caveat 使用 same_length_i0_alpha 的 `max_abs_phi_tilde = 6.038944611092431 > 1`。
 
 ## Mixed_Potential_Electrical_Double_Layer/Solve_Emix_updating.py - 已修复事项
 
@@ -132,8 +140,14 @@
   - `with EDL` 用亮暖色/red-orange family。
   - `without EDL` 用暗冷色/navy-blue family。
   - panel c 保持 log y-scale。
+  - panel b legend 放在 `center right` 且 `bbox_to_anchor=(0.98, 0.50)`，避免与曲线重合。
   - panel f 是 PZC + potential reference map，不是 BV+PZC current plot。
+  - panel f 不显示左侧 lane 标签 `Equilibrium potentials` / `Mixed potential` / `PZC`；PZC support 灰色 `#8C8C8C`，PZC Pd 蓝色 `#5A90C8`，PZC Au 金色 `#E4C133`。
+  - panel f 横轴标签为 `Potential (V vs. RHE)`。
   - 图片内部已按用户要求删除 panel 字母；文件名仍保留 `panel_a` 等用于追溯，不代表图片里有字母。
+- 脚本有 same-series 可配置 hook：
+  - `PANEL_D_TITLE` / `PANEL_E_TITLE` 用于 wrapper 覆盖 panel d/e 标题。
+  - `PANEL_E_YMIN` 用于 wrapper 固定 panel e 的 y 轴下界。
 - 只导出 PNG/SVG，不导出 PDF：
   - `figure_3_panel_a_emix_imix_20260528_111255.png/svg`
   - `figure_3_panel_b_reaction_plane_potential_20260528_111255.png/svg`
@@ -270,13 +284,21 @@
 - 输出 tag：`same_length_i0_alpha050_au25_pd25_20260528_111255`。
 - 一键入口：`Figures/Figure_same_length_i0_alpha/make_all_same_length_i0_alpha.py`。
 - 只导出 PNG/SVG，不导出 PDF；`Figure_scheme` 原有带 PZC 的 EDL vs no-EDL BV 图，另有单独解释性 schematic PNG。
+- `Figure_3/` 当前图件细节：
+  - `figure_3_panel_b_reaction_plane_potential_*` 的 legend 已统一下移到图框右侧中线，避免与曲线重合。
+  - `figure_3_panel_c_local_reactant_concentration_*` 标题为 `Local reactant concentration at RP`。
+  - `figure_3_panel_d_local_overpotential_*` 标题为 `Local overpotential at RP`。
+  - `figure_3_panel_e_local_current_density_*` 标题为 `Local current density at RP`，y 轴下界固定为 `-400`。
+  - `figure_3_panel_f_pzc_potential_reference_map_*` 去掉左侧 `Equilibrium potentials` / `Mixed potential` / `PZC` lane 标签；PZC Pd 蓝色 `#5A90C8`，PZC Au 金色 `#E4C133`；横轴为 `Potential (V vs. RHE)`。
+- `Figure_scheme/edl_vs_no_edl_bv_mixed_potential_with_pzc_*` 横轴为 `Potential (V vs. RHE)`；`PZC Pd` 和 `PZC Au` 颜色规则跟 Figure 3 panel f 保持一致时优先复用同一色系。
 - EDL 使 `E_mix` 上升但 `i_mix` 下降的解释性 schematic：
   - 脚本：`Figures/Figure_same_length_i0_alpha/Figure_scheme/make_emix_up_imix_down_schematic_same_length_i0_alpha.py`
   - 输出：`Figures/Figure_same_length_i0_alpha/Figure_scheme/emix_up_imix_down_schematic_same_length_i0_alpha050_au25_pd25_20260528_111255.png`
   - 只输出 PNG，不输出 SVG/PDF。
   - 当前版本只保留单 panel，没有左上角 `a` panel 标题。
+  - 横轴标签为 `Potential (V vs. RHE)`。
   - 图例文字为 `Oxidation on Au, with EDL`、`Reduction on Pd, with EDL`、`Oxidation on Au, no EDL`、`Reduction on Pd, no EDL`。
-  - 图中用单向箭头标注 `E_mix` 从 `0.47 V` 上移到 `0.60 V`，并用 `$i_{\mathrm{mix}}$ drops` 标注 `|i|` 从 `0.118` 降到 `0.084 A/m^2`。
+  - 图中用单向箭头标注 `E_mix` 从 `0.47 V` 上移到 `0.60 V`；纵轴为 `60 nm` 周期单元的绝对电流，单位写作 `Current (10^-3 uA)`，单位正体且与横轴统一使用括号；并用 `$I_{\mathrm{mix}}$ drops` 标注 `|I|` 从 `0.059 x 10^-3 uA` 降到 `0.042 x 10^-3 uA`。
 - 关键结果：
   - `E_mix_with = 0.5979829354430014 V`
   - `E_mix_no = 0.4670000000000001 V`
@@ -319,6 +341,10 @@
   - `alpha1 = alpha2 = 0.5`
   - 输出 tag：`same_length_i0_alpha050_au25_pd25_20260528_111255`
 - 参考 `Mixed_Potential_Electrical_Double_Layer/results/20260528_111255/figures/` 的扫描图生成逻辑，只保留 PNG，不生成 SVG/PDF。
+- 扫描图样式已在 wrapper 内局部覆盖，不改 solver 默认全局行为：
+  - `i_mix_avg` 的显示 label 改为 `Mixed current density, \bar{i}_{mix} (A/m^2)`，去掉 `Average`；CSV 字段名和计算仍保持 `i_mix_avg`。
+  - 字体栈改为 `Helvetica, Nimbus Sans, Arial, DejaVu Sans, sans-serif`，mathtext 使用 Nimbus Sans，和 `Figure_same_length_i0_alpha/Figure_3` 保持一致。
+  - OFAT 单图字号放大，并通过 wrapper 的本地 `finalize_scan_figure(...)` 增大 tight-bbox padding，避免 y 轴标签贴边。
 - 图件输出在 `Figures/Figure_scan/figures/`：
   - 66 个 OFAT PNG：22 个参数，每个参数包含 `E_mix`、`i_mix_avg_A_per_m2` 和 combined 三张图。
   - 2 个 combined heatmap PNG：`heatmap_combined_panel_log.png` 和 `heatmap_combined_panel_linear.png`。
@@ -359,4 +385,11 @@
   - 内层 repo 提交：`6b892ea Record result parameters and tighten validation`
   - 外层 repo 提交：`6649f9f Update EDL results submodule`
 - 后续新增了 `Figures/` 下的 BV/EDL 图脚本、Figure 3 独立 panel 脚本和导出图；如果用户要求“清理工作树”，需要考虑是否提交 `Figures/` 和更新后的 `AGENTS.md`。
+- 当前未提交上下文包括本轮图件修订：
+  - `AGENTS.md` 已更新本轮记忆。
+  - `Mixed_Potential_Electrical_Double_Layer/compare_figure_parameters_and_methods.md` 已改为 same_length_i0_alpha baseline。
+  - `Figures/Figure_3/make_figure_3_panels.py` 有 panel b legend、panel f PZC 颜色/标签、panel d/e title hook、panel e y-min hook、`Potential (V vs. RHE)` 等改动。
+  - `Figures/Figure_same_length_i0_alpha/Figure_3/make_figure_3_panels_same_length_i0_alpha.py` 设定 panel c/d/e 标题和 panel e 下界。
+  - `Figures/Figure_scan/make_scan_figures_same_length_i0_alpha.py` 设定扫描图字体、`Mixed current density` 显示 label、OFAT 导出 padding；`Figures/Figure_scan/figures/` 68 个 PNG 已重导出，无 SVG/PDF。
+  - `Figures/Figure_scheme/make_edl_vs_no_edl_bv_mixed_potential_with_pzc.py` 和 `Figures/Figure_same_length_i0_alpha/Figure_scheme/make_emix_up_imix_down_schematic_same_length_i0_alpha.py` 已使用 `Potential (V vs. RHE)`。
 - 不要使用 destructive git 命令；不要 revert 用户未要求还原的文件。

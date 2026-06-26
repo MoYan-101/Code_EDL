@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -37,14 +38,21 @@ COLORS = {
     "gray": "#767676",
     "light_gray": "#CFCECE",
     "pzc_support": "#8C8C8C",
-    "pzc_pd": "#C9A227",
-    "pzc_au": "#8A6E1D",
+    "pzc_pd": "#5A90C8",
+    "pzc_au": "#E4C133",
 }
 
 SINGLE_PANEL_FIGSIZE = (3.55, 2.75)
 SINGLE_PANEL_AXES_RECT = (0.18, 0.20, 0.78, 0.66)
 PANEL_A_FIGSIZE = (4.05, 2.75)
 PANEL_F_FIGSIZE = (4.20, 3.25)
+PANEL_D_TITLE = "Local overpotential"
+PANEL_E_TITLE = "Local current density"
+PANEL_E_YMIN: float | None = None
+
+
+def units_to_parentheses(label: str) -> str:
+    return re.sub(r"\s+\[([^\]]+)\]", r" (\1)", label)
 
 
 @dataclass(frozen=True)
@@ -231,8 +239,8 @@ def build_data() -> Figure3Data:
 
 def style_axes(ax: plt.Axes, xlabel: str, ylabel: str, title: str) -> None:
     ax.set_facecolor("none")
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
+    ax.set_xlabel(units_to_parentheses(xlabel))
+    ax.set_ylabel(units_to_parentheses(ylabel))
     ax.set_title(title, loc="left", pad=6, fontsize=9.8, fontweight="normal")
     ax.tick_params(length=3.4, width=0.85, pad=2.5, labelsize=8.2)
     for spine in ("left", "bottom", "top", "right"):
@@ -288,7 +296,7 @@ def plot_panel_a(data: Figure3Data) -> list[Path]:
     colors = [COLORS["without"], COLORS["with"]]
 
     axes[0].bar(x, values[0], width=0.58, color=colors, edgecolor=COLORS["dark"], linewidth=0.8)
-    style_axes(axes[0], "", r"$E_{\mathrm{mix}}$ [V]", r"$E_{\mathrm{mix}}$")
+    style_axes(axes[0], "", r"$E_{\mathrm{mix}}$ (V)", r"$E_{\mathrm{mix}}$")
     axes[0].set_xticks(x)
     axes[0].set_xticklabels(labels, rotation=45, ha="right", rotation_mode="anchor")
     axes[0].set_xlim(-0.55, 1.55)
@@ -310,8 +318,8 @@ def plot_panel_b(data: Figure3Data) -> list[Path]:
     ax.plot(data.x_nm, data.phi_rp_edl, color=COLORS["with"], linewidth=2.0, label="with EDL", zorder=3)
     ax.plot(data.x_nm, data.phi_rp_no, color=COLORS["without"], linewidth=1.8, label="without EDL", zorder=2)
     add_boundaries(ax, data)
-    style_axes(ax, "x [nm]", r"$\phi_{\mathrm{RP}}(x)$ [V]", "Reaction-plane potential")
-    ax.legend(loc="upper right", fontsize=8.0, handlelength=2.0)
+    style_axes(ax, "x (nm)", r"$\phi_{\mathrm{RP}}(x)$ (V)", "Reaction-plane potential")
+    ax.legend(loc="center right", bbox_to_anchor=(0.98, 0.50), fontsize=8.0, handlelength=2.0)
     return save_panel(fig, "figure_3_panel_b_reaction_plane_potential")
 
 
@@ -322,7 +330,7 @@ def plot_panel_c(data: Figure3Data) -> list[Path]:
         data.c_r1_norm,
         color=COLORS["with"],
         linewidth=2.0,
-        label=r"$c_{\mathrm{R1}}/c_{\mathrm{bulk}}$ (with EDL)",
+        label=r"$C_{\mathrm{Red},1}/C_{\mathrm{bulk}}$ (with EDL)",
         zorder=3,
     )
     ax.plot(
@@ -330,7 +338,7 @@ def plot_panel_c(data: Figure3Data) -> list[Path]:
         data.c_o2_norm,
         color=COLORS["with_gold"],
         linewidth=2.0,
-        label=r"$c_{\mathrm{O2}}/c_{\mathrm{bulk}}$ (with EDL)",
+        label=r"$C_{\mathrm{Ox},2}/C_{\mathrm{bulk}}$ (with EDL)",
         zorder=3,
     )
     ax.plot(
@@ -352,7 +360,7 @@ def plot_panel_c(data: Figure3Data) -> list[Path]:
         ]
     )
     ax.set_ylim(float(np.min(positive)) / 1.25, float(np.max(positive)) * 8.0)
-    style_axes(ax, "x [nm]", r"$c_i/c_{\mathrm{bulk}}$ [-]", "Local reactant concentration")
+    style_axes(ax, "x (nm)", r"$c_i/c_{\mathrm{bulk}}$ (-)", "Local reactant concentration")
     ax.legend(loc="upper right", fontsize=7.1, handlelength=1.7)
     return save_panel(fig, "figure_3_panel_c_local_reactant_concentration")
 
@@ -362,7 +370,7 @@ def plot_panel_d(data: Figure3Data) -> list[Path]:
     ax.plot(data.x_nm, data.eta_edl, color=COLORS["with"], linewidth=2.0, label="with EDL", zorder=3)
     ax.plot(data.x_nm, data.eta_no, color=COLORS["without"], linewidth=1.8, label="without EDL", zorder=2)
     add_boundaries(ax, data)
-    style_axes(ax, "x [nm]", solver._plot_axis_label("overpotential"), "Local overpotential")
+    style_axes(ax, "x (nm)", solver._plot_axis_label("overpotential"), PANEL_D_TITLE)
     finite_ylim(ax, data.eta_edl, data.eta_no, pad_frac=0.08)
     ax.legend(loc="center right", fontsize=8.0, handlelength=2.0)
     return save_panel(fig, "figure_3_panel_d_local_overpotential")
@@ -400,8 +408,11 @@ def plot_panel_e(data: Figure3Data) -> list[Path]:
         zorder=3,
     )
     add_boundaries(ax, data)
-    style_axes(ax, "x [nm]", i_label, "Local current density")
+    style_axes(ax, "x (nm)", i_label, PANEL_E_TITLE)
     finite_ylim(ax, i1_edl, i1_no, i2_edl, i2_no, pad_frac=0.08)
+    if PANEL_E_YMIN is not None:
+        _, ymax = ax.get_ylim()
+        ax.set_ylim(PANEL_E_YMIN, ymax)
     ax.legend(loc="upper right", fontsize=7.0, handlelength=1.8)
     return save_panel(fig, "figure_3_panel_e_local_current_density")
 
@@ -489,13 +500,9 @@ def plot_panel_f(data: Figure3Data) -> list[Path]:
     add_reference_marker(ax, values["pzc_Pd"], lane_y["pzc"], "PZC Pd", COLORS["pzc_pd"], "^", -0.13, text_x_offset=-0.02)
     add_reference_marker(ax, values["pzc_Au"], lane_y["pzc"], "PZC Au", COLORS["pzc_au"], "^", -0.13)
 
-    ax.text(-0.015, lane_y["eq"], "Equilibrium\npotentials", ha="right", va="center", fontsize=7.7, color=COLORS["dark"])
-    ax.text(-0.015, lane_y["mix"], "Mixed\npotential", ha="right", va="center", fontsize=7.7, color=COLORS["dark"])
-    ax.text(-0.015, lane_y["pzc"], "PZC", ha="right", va="center", fontsize=7.7, color=COLORS["dark"])
-
-    ax.set_xlim(xmin - 0.07, xmax + 0.02)
+    ax.set_xlim(xmin - 0.02, xmax + 0.02)
     ax.set_ylim(-0.92, 0.80)
-    ax.set_xlabel("Potential vs RHE (V)")
+    ax.set_xlabel("Potential (V vs. RHE)")
     ax.set_yticks([])
     ax.set_xticks([0.0, 0.25, 0.50, 0.75, 1.0])
     ax.tick_params(axis="x", length=3.4, width=0.85, labelsize=8.2)
@@ -504,7 +511,7 @@ def plot_panel_f(data: Figure3Data) -> list[Path]:
         ax.spines[side].set_visible(False)
     ax.spines["bottom"].set_position(("data", -0.72))
     ax.spines["bottom"].set_linewidth(0.9)
-    fig.subplots_adjust(left=0.18, right=0.985, bottom=0.17, top=0.89)
+    fig.subplots_adjust(left=0.10, right=0.985, bottom=0.17, top=0.89)
     return save_panel(fig, "figure_3_panel_f_pzc_potential_reference_map")
 
 

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
 
+import matplotlib.pyplot as plt
 import pandas as pd
 
 
@@ -24,6 +26,45 @@ INPUTS_DIR = SCAN_DIR / "inputs"
 
 EXPECTED_OFAT_PARAM_COUNT = 22
 EXPECTED_PNG_COUNT = EXPECTED_OFAT_PARAM_COUNT * 3 + 2
+SCAN_IMIX_AVG_AXIS_LABEL = r"Mixed current density, $\bar{i}_{\mathrm{mix}}$ (A/m$^2$)"
+
+
+def units_to_parentheses(label: str) -> str:
+    return re.sub(r"\s+\[([^\]]+)\]", r" (\1)", label)
+
+
+def apply_scan_plot_style() -> None:
+    for labels in (solver.PLOT_AXIS_LABELS, solver.PARAM_AXIS_LABELS):
+        for key, label in list(labels.items()):
+            labels[key] = units_to_parentheses(label)
+    solver.OFAT_EMIX_AXIS_LABEL_MV = units_to_parentheses(solver.OFAT_EMIX_AXIS_LABEL_MV)
+    solver.PLOT_AXIS_LABELS["i_mix_avg"] = SCAN_IMIX_AVG_AXIS_LABEL
+    solver._finalize_figure = finalize_scan_figure
+    plt.rcParams.update(
+        {
+            "font.family": "sans-serif",
+            "font.sans-serif": ["Helvetica", "Nimbus Sans", "Arial", "DejaVu Sans", "sans-serif"],
+            "font.size": 11.0,
+            "axes.titlesize": 12.6,
+            "axes.labelsize": 12.0,
+            "xtick.labelsize": 10.6,
+            "ytick.labelsize": 10.6,
+            "legend.fontsize": 10.6,
+            "mathtext.fontset": "custom",
+            "mathtext.rm": "Nimbus Sans",
+            "mathtext.it": "Nimbus Sans:italic",
+            "mathtext.bf": "Nimbus Sans:bold",
+            "mathtext.cal": "Nimbus Sans",
+            "mathtext.sf": "Nimbus Sans",
+            "mathtext.tt": "Nimbus Sans",
+        }
+    )
+
+
+def finalize_scan_figure(fig: Any, path: Path) -> None:
+    fig.tight_layout(pad=0.85)
+    fig.savefig(path, bbox_inches="tight", pad_inches=0.24)
+    plt.close(fig)
 
 
 def ensure_dirs() -> None:
@@ -109,7 +150,7 @@ def plot_single_metric_ofat_pngs(params: dict[str, Any]) -> None:
             with_col="E_mix_with_edl_FULL",
             no_col="E_mix_without_edl",
             metric_label="E_mix",
-            ylab=solver._plot_axis_label("E_mix"),
+            ylab=units_to_parentheses(solver._plot_axis_label("E_mix")),
             spec_type=spec["type"],
             fig_dir=FIG_DIR,
         )
@@ -119,7 +160,7 @@ def plot_single_metric_ofat_pngs(params: dict[str, Any]) -> None:
             with_col="i_mix_avg_with_edl_FULL_A_per_m2",
             no_col="i_mix_avg_without_edl_A_per_m2",
             metric_label="i_mix_avg_A_per_m2",
-            ylab=solver._plot_axis_label("i_mix_avg"),
+            ylab=units_to_parentheses(solver._plot_axis_label("i_mix_avg")),
             spec_type=spec["type"],
             fig_dir=FIG_DIR,
             y_axis_key="i_mix_avg",
@@ -148,6 +189,7 @@ def assert_outputs() -> list[Path]:
 
 
 def main() -> None:
+    apply_scan_plot_style()
     ensure_dirs()
     remove_previous_generated_outputs()
 

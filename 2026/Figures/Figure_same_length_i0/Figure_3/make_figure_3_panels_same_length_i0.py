@@ -22,7 +22,7 @@ def plot_panel_c_same_length_i0(data: Any) -> list[Path]:
         data.c_r1_norm,
         color=base.COLORS["with"],
         linewidth=2.0,
-        label=r"$c_{\mathrm{R1}}/c_{\mathrm{bulk}}$ (with EDL)",
+        label=r"$C_{\mathrm{Red},1}/C_{\mathrm{bulk}}$ (with EDL)",
         zorder=3,
     )
     ax.plot(
@@ -30,7 +30,7 @@ def plot_panel_c_same_length_i0(data: Any) -> list[Path]:
         data.c_o2_norm,
         color=base.COLORS["with_gold"],
         linewidth=2.0,
-        label=r"$c_{\mathrm{O2}}/c_{\mathrm{bulk}}$ (with EDL)",
+        label=r"$C_{\mathrm{Ox},2}/C_{\mathrm{bulk}}$ (with EDL)",
         zorder=3,
     )
     ax.plot(
@@ -52,7 +52,7 @@ def plot_panel_c_same_length_i0(data: Any) -> list[Path]:
         ]
     )
     ax.set_ylim(float(base.np.min(positive)) / 1.25, float(base.np.max(positive)) * 30.0)
-    base.style_axes(ax, "x [nm]", r"$c_i/c_{\mathrm{bulk}}$ [-]", "Local reactant concentration")
+    base.style_axes(ax, "x (nm)", r"$c_i/c_{\mathrm{bulk}}$ (-)", "Local reactant concentration")
     ax.legend(
         loc="upper right",
         fontsize=6.9,

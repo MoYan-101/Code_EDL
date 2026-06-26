@@ -78,7 +78,7 @@ def add_pzc_lane(
         )
     ax.text(e_min, 0.0, "PZC", ha="right", va="center", fontsize=7.4, color=PALETTE["gray"])
     ax.set_yticks([])
-    ax.set_xlabel("Potential vs RHE (V)", fontsize=9.0)
+    ax.set_xlabel("Potential (V vs. RHE)", fontsize=9.0)
     ax.set_xticks([0.10, 0.30, 0.50, 0.70, 0.90])
     ax.tick_params(axis="x", length=3.2, width=0.85, labelsize=8.0)
     for side in ("left", "right", "top"):

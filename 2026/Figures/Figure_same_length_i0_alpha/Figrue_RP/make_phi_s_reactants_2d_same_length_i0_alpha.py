@@ -41,10 +41,11 @@ def plot_phi_s_reactants_same_length_i0_alpha(data: Any) -> list[Path]:
         data.phi_s_mV,
         cmap="RdBu_r",
         norm=base.TwoSlopeNorm(vmin=-phi_vlim, vcenter=0.0, vmax=phi_vlim),
-        cbar_label=r"$\Phi_s$ [mV]",
+        cbar_label=r"Φ$_s$ $\mathrm{(mV)}$",
         title=rf"Solution phase potential, $E_{{\mathrm{{mix}}}}$ = {float(data.res_edl['E_mix']):.2f} V",
         contour_levels=phi_levels,
     )
+    caxes[0].yaxis.label.set_fontstyle("italic")
     base.add_heatmap(
         axes[1],
         caxes[1],
@@ -52,8 +53,8 @@ def plot_phi_s_reactants_same_length_i0_alpha(data: Any) -> list[Path]:
         data.c_r1_norm,
         cmap="viridis",
         norm=base.log_norm(data.c_r1_norm),
-        cbar_label=r"$c_{\mathrm{R1}}/c_{\mathrm{bulk}}$",
-        title=r"Reactant R1 distribution",
+        cbar_label=r"$C_{\mathrm{Red},1}/C_{\mathrm{bulk}}$",
+        title=r"Reactant Red,1 distribution",
         contour_levels=base.log_contour_levels(data.c_r1_norm),
     )
     base.add_heatmap(
@@ -63,8 +64,8 @@ def plot_phi_s_reactants_same_length_i0_alpha(data: Any) -> list[Path]:
         data.c_o2_norm,
         cmap="viridis",
         norm=base.log_norm(data.c_o2_norm),
-        cbar_label=r"$c_{\mathrm{O2}}/c_{\mathrm{bulk}}$",
-        title=r"Reactant O2 distribution",
+        cbar_label=r"$C_{\mathrm{Ox},2}/C_{\mathrm{bulk}}$",
+        title=r"Reactant Ox,2 distribution",
         show_xlabel=True,
         contour_levels=base.log_contour_levels(data.c_o2_norm),
     )

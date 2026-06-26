@@ -140,14 +140,14 @@ SCAN_SPECS = (
 )
 
 METRIC_SPECS = (
-    MetricSpec("sigma_mC_per_m2", r"$\sigma$ [mC m$^{-2}$]", "linear", "{:.1f}"),
-    MetricSpec("phi_RP_mean_mV", r"$\langle\phi_{\mathrm{RP}}\rangle$ [mV]", "linear", "{:.0f}"),
+    MetricSpec("sigma_mC_per_m2", r"$\sigma$ (mC m$^{-2}$)", "linear", "{:.1f}"),
+    MetricSpec("phi_RP_mean_mV", r"$\langle\phi_{\mathrm{RP}}\rangle$ (mV)", "linear", "{:.0f}"),
     MetricSpec("reactant_mean", r"$\langle c/c_{\mathrm{bulk}}\rangle$", "log", "{:.1e}"),
-    MetricSpec("side_current_avg_A_per_m2", r"$\bar{I}_j$ [A m$^{-2}$]", "linear", "{:.2e}"),
-    MetricSpec("E_mix_with_V", r"$E_{\mathrm{mix}}$ [V]", "linear", "{:.3f}", "E_mix_no_V"),
+    MetricSpec("side_current_avg_A_per_m2", r"$\bar{I}_j$ (A m$^{-2}$)", "linear", "{:.2e}"),
+    MetricSpec("E_mix_with_V", r"$E_{\mathrm{mix}}$ (V)", "linear", "{:.3f}", "E_mix_no_V"),
     MetricSpec(
         "i_mix_avg_with_A_per_m2",
-        r"$\bar{i}_{\mathrm{mix}}$ [A m$^{-2}$]",
+        r"$\bar{i}_{\mathrm{mix}}$ (A m$^{-2}$)",
         "log",
         "{:.2e}",
         "i_mix_avg_no_A_per_m2",
@@ -699,7 +699,7 @@ def format_parameter_ticks(spec: ScanSpec) -> list[str]:
 
 
 def parameter_axis_label(spec: ScanSpec) -> str:
-    return f"{spec.title}\n{spec.display_unit}"
+    return f"{spec.title}\n({spec.display_unit})"
 
 
 def formula_symbols(spec: ScanSpec | None) -> tuple[str, str]:
@@ -892,7 +892,7 @@ def style_metric_axis(
 
     if show_column_title:
         ax.set_title(
-            f"{spec.title}\n{spec.display_unit}",
+            parameter_axis_label(spec),
             loc="center",
             fontsize=8.2,
             pad=6.0,
@@ -1090,7 +1090,7 @@ def plot_causal_tile(
     format_parameter_axis(ax, spec)
     ax.set_title(metric.label, loc="left", fontsize=9.7, pad=3.4, color=COLORS["dark"])
     if show_xlabel:
-        ax.set_xlabel(f"{spec.title} [{spec.display_unit}]", fontsize=8.4, labelpad=2.0)
+        ax.set_xlabel(f"{spec.title} ({spec.display_unit})", fontsize=8.4, labelpad=2.0)
     else:
         ax.set_xlabel("")
     ax.set_ylabel("")
@@ -1275,8 +1275,8 @@ def plot_true_polarization_panel(ax: plt.Axes, spec: ScanSpec, cases: list[dict[
     ax.set_xlim(float(np.min(e_values)), float(np.max(e_values)))
     ax.set_ylim(-y_limit, y_limit)
     ax.set_title("True polarization curves", loc="left", fontsize=9.4, pad=4.0, color=COLORS["dark"])
-    ax.set_xlabel("Potential vs RHE (V)", fontsize=8.0, labelpad=2.5)
-    ax.set_ylabel(r"Average half-current [A m$^{-2}$]", fontsize=8.0, labelpad=3.0)
+    ax.set_xlabel("Potential (V vs. RHE)", fontsize=8.0, labelpad=2.5)
+    ax.set_ylabel(r"Average half-current (A m$^{-2}$)", fontsize=8.0, labelpad=3.0)
     ax.xaxis.set_major_locator(MaxNLocator(nbins=6))
     ax.yaxis.set_major_locator(MaxNLocator(nbins=5))
     ax.tick_params(axis="both", length=2.7, width=0.75, pad=1.6, labelsize=7.1)
