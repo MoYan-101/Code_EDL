@@ -32,6 +32,9 @@ OUT_PATH = (
 )
 CURRENT_SCALE = 1e9
 CURRENT_UNIT = r"10$^{-3}$ uA"
+REFERENCE_XMIN = -0.02
+REFERENCE_XMAX = 1.02
+REFERENCE_XTICKS = [0.0, 0.25, 0.50, 0.75, 1.0]
 
 
 def apply_style() -> None:
@@ -44,6 +47,7 @@ def apply_style() -> None:
             "axes.spines.right": False,
             "axes.linewidth": 0.9,
             "legend.frameon": False,
+            "svg.fonttype": "none",
             "mathtext.fontset": "custom",
             "mathtext.rm": "Nimbus Sans",
             "mathtext.it": "Nimbus Sans:italic",
@@ -133,8 +137,8 @@ def plot_polarization_panel(
 
     use_affine_phi2 = bool(params.get("use_affine_phi2", True))
     lambda_d = float(solver.compute_derived_params(params)["lambda_D"])
-    e_min = values["E1_eq"] - 0.06
-    e_max = values["E2_eq"] + 0.06
+    e_min = REFERENCE_XMIN
+    e_max = REFERENCE_XMAX
     e_values = np.linspace(e_min, e_max, 1200)
 
     au_edl, pd_edl = compute_signed_half_currents(
@@ -150,7 +154,7 @@ def plot_polarization_panel(
         params, lambda_d, values["E_mix_no"], use_edl=False, use_affine_phi2=use_affine_phi2
     )
     assert_mixed_current("with EDL", i_au_with, i_pd_with, values["i_mix_avg_with"])
-    assert_mixed_current("no EDL", i_au_no, i_pd_no, values["i_mix_avg_no"])
+    assert_mixed_current("w/o EDL", i_au_no, i_pd_no, values["i_mix_avg_no"])
 
     au_edl = current_density_to_display_current(params, au_edl)
     pd_edl = current_density_to_display_current(params, pd_edl)
@@ -175,7 +179,7 @@ def plot_polarization_panel(
         linewidth=1.55,
         linestyle=no_edl_style,
         alpha=0.58,
-        label="Oxidation on Au, no EDL",
+        label="Oxidation on Au, w/o EDL",
     )
     ax.plot(
         e_values,
@@ -184,7 +188,7 @@ def plot_polarization_panel(
         linewidth=1.55,
         linestyle=no_edl_style,
         alpha=0.58,
-        label="Reduction on Pd, no EDL",
+        label="Reduction on Pd, w/o EDL",
     )
     ax.axhline(0.0, color=PALETTE["dark"], linewidth=0.85)
 
@@ -226,17 +230,18 @@ def plot_polarization_panel(
         bbox=dict(facecolor="white", edgecolor="none", alpha=0.88, boxstyle="round,pad=0.12"),
     )
 
+    drop_arrow_x = e_max - 0.03
     ax.annotate(
         "",
-        xy=(e_max - 0.03, i_mix_with),
-        xytext=(e_max - 0.03, i_mix_no),
+        xy=(drop_arrow_x, i_mix_with),
+        xytext=(drop_arrow_x, i_mix_no),
         arrowprops=dict(arrowstyle="->", color=PALETTE["dark"], linewidth=1.05),
     )
     ax.text(
-        e_max - 0.02,
+        drop_arrow_x - 0.018,
         0.5 * (i_mix_with + i_mix_no),
         r"$I_{\mathrm{mix}}$ drops",
-        ha="left",
+        ha="right",
         va="center",
         fontsize=7.7,
         color=PALETTE["dark"],
@@ -255,7 +260,7 @@ def plot_polarization_panel(
     ax.text(
         values["E_mix_no"] - 0.012,
         -0.50 * y_limit,
-        rf"no EDL: {fmt_v(values['E_mix_no'])}, $|I|={i_mix_no:.3f}$ {CURRENT_UNIT}",
+        rf"w/o EDL: {fmt_v(values['E_mix_no'])}, $|I|={i_mix_no:.3f}$ {CURRENT_UNIT}",
         ha="right",
         va="center",
         fontsize=7.7,
@@ -263,6 +268,7 @@ def plot_polarization_panel(
     )
 
     ax.set_xlim(e_min, e_max)
+    ax.set_xticks(REFERENCE_XTICKS)
     ax.set_ylim(-y_limit, y_limit)
     ax.set_xlabel("Potential (V vs. RHE)")
     ax.set_ylabel(f"Current ({CURRENT_UNIT})")
@@ -282,7 +288,7 @@ def plot_factor_panel(ax: plt.Axes, explanation: dict[str, float]) -> None:
         dtype=float,
     )
     labels = [
-        "no EDL\nbaseline",
+        "w/o EDL\nbaseline",
         "higher\n$E_{mix}$ only",
         "with EDL\nfinal",
     ]
@@ -294,7 +300,7 @@ def plot_factor_panel(ax: plt.Axes, explanation: dict[str, float]) -> None:
     ax.axhline(1.0, color=PALETTE["gray"], linewidth=0.8, linestyle=(0, (3, 2)))
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
-    ax.set_ylabel(r"Au current factor vs no EDL")
+    ax.set_ylabel(r"Au current factor vs w/o EDL")
     ax.set_ylim(0.035, 25.0)
     ax.tick_params(axis="both", length=3.2, width=0.85, labelsize=8.0)
     ax.set_title(
@@ -354,9 +360,11 @@ def main() -> None:
     plot_polarization_panel(ax, params, summary)
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(OUT_PATH, dpi=450, bbox_inches="tight")
+    for path in (OUT_PATH, OUT_PATH.with_suffix(".svg")):
+        fig.savefig(path, dpi=450, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {OUT_PATH.relative_to(ROOT)}")
+    print(f"Saved {OUT_PATH.with_suffix('.svg').relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

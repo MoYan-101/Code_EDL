@@ -14,6 +14,11 @@ import same_length_i0_alpha_common as common  # noqa: E402
 SCRIPTS = [
     common.FIGURE_3_DIR / "make_figure_3_panels_same_length_i0_alpha.py",
     common.FIGURE_SCHEME_DIR / "make_edl_vs_no_edl_bv_mixed_potential_with_pzc_same_length_i0_alpha.py",
+    common.FIGURE_SCHEME_DIR / "make_emix_up_imix_down_schematic_same_length_i0_alpha.py",
+    common.FIGURE_SCHEME_DIR / "make_half_reaction_shift_schematic_same_length_i0_alpha.py",
+    common.FIGURE_SCHEME_DIR / "make_ctot_high_salt_regime_schematic_same_length_i0_alpha.py",
+    common.FIGURE_SCHEME_DIR / "make_ctot_emix_high_salt_regime_schematic_same_length_i0_alpha.py",
+    common.FIGURE_SCHEME_DIR / "make_ctot_half_reaction_polarization_overlay_same_length_i0_alpha.py",
     common.FIGRUE_RP_DIR / "make_phi_s_reactants_2d_same_length_i0_alpha.py",
 ]
 

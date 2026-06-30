@@ -291,7 +291,7 @@ def plot_panel_a(data: Figure3Data) -> list[Path]:
 
     fig, axes = plt.subplots(1, 2, figsize=PANEL_A_FIGSIZE)
     make_transparent(fig)
-    labels = ["without EDL", "with EDL"]
+    labels = ["w/o EDL", "with EDL"]
     x = np.array([0.0, 1.0], dtype=float)
     colors = [COLORS["without"], COLORS["with"]]
 
@@ -316,7 +316,7 @@ def plot_panel_a(data: Figure3Data) -> list[Path]:
 def plot_panel_b(data: Figure3Data) -> list[Path]:
     fig, ax = make_single_axis_panel()
     ax.plot(data.x_nm, data.phi_rp_edl, color=COLORS["with"], linewidth=2.0, label="with EDL", zorder=3)
-    ax.plot(data.x_nm, data.phi_rp_no, color=COLORS["without"], linewidth=1.8, label="without EDL", zorder=2)
+    ax.plot(data.x_nm, data.phi_rp_no, color=COLORS["without"], linewidth=1.8, label="w/o EDL", zorder=2)
     add_boundaries(ax, data)
     style_axes(ax, "x (nm)", r"$\phi_{\mathrm{RP}}(x)$ (V)", "Reaction-plane potential")
     ax.legend(loc="center right", bbox_to_anchor=(0.98, 0.50), fontsize=8.0, handlelength=2.0)
@@ -347,7 +347,7 @@ def plot_panel_c(data: Figure3Data) -> list[Path]:
         color=COLORS["without"],
         linewidth=1.6,
         linestyle=(0, (4, 2)),
-        label="without EDL",
+        label="w/o EDL",
         zorder=2,
     )
     add_boundaries(ax, data)
@@ -368,7 +368,7 @@ def plot_panel_c(data: Figure3Data) -> list[Path]:
 def plot_panel_d(data: Figure3Data) -> list[Path]:
     fig, ax = make_single_axis_panel()
     ax.plot(data.x_nm, data.eta_edl, color=COLORS["with"], linewidth=2.0, label="with EDL", zorder=3)
-    ax.plot(data.x_nm, data.eta_no, color=COLORS["without"], linewidth=1.8, label="without EDL", zorder=2)
+    ax.plot(data.x_nm, data.eta_no, color=COLORS["without"], linewidth=1.8, label="w/o EDL", zorder=2)
     add_boundaries(ax, data)
     style_axes(ax, "x (nm)", solver._plot_axis_label("overpotential"), PANEL_D_TITLE)
     finite_ylim(ax, data.eta_edl, data.eta_no, pad_frac=0.08)
@@ -395,7 +395,7 @@ def plot_panel_e(data: Figure3Data) -> list[Path]:
         color=COLORS["without"],
         linewidth=1.7,
         linestyle=(0, (4, 2)),
-        label=r"$i_1$ (Au), without EDL",
+        label=r"$i_1$ (Au), w/o EDL",
         zorder=3,
     )
     ax.plot(
@@ -404,7 +404,7 @@ def plot_panel_e(data: Figure3Data) -> list[Path]:
         color=COLORS["without_alt"],
         linewidth=1.7,
         linestyle=(0, (2, 2)),
-        label=r"$i_2$ (Pd), without EDL",
+        label=r"$i_2$ (Pd), w/o EDL",
         zorder=3,
     )
     add_boundaries(ax, data)
@@ -470,7 +470,7 @@ def plot_panel_f(data: Figure3Data) -> list[Path]:
         ax,
         values["E_mix_no"],
         lane_y["mix"],
-        r"$E_{\mathrm{mix}}$ without EDL",
+        r"$E_{\mathrm{mix}}$ w/o EDL",
         COLORS["without"],
         "D",
         -0.15,

@@ -37,7 +37,7 @@ PARAM_OVERRIDES = {
     "alpha2": ALPHA_EQUAL,
     "out_of_plane_width": OUT_OF_PLANE_WIDTH,
 }
-EXPECTED_IMAGE_COUNT = 16
+EXPECTED_IMAGE_COUNT = 26
 
 sys.path.insert(0, str(SOLVER_DIR))
 import Solve_Emix_updating as solver  # noqa: E402

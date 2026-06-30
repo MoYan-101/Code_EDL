@@ -23,10 +23,13 @@ SCAN_DIR = ROOT / "Figures" / "Figure_scan"
 FIG_DIR = SCAN_DIR / "figures"
 CSV_DIR = SCAN_DIR / "csv"
 INPUTS_DIR = SCAN_DIR / "inputs"
+L_SUPPORT_DIR = FIG_DIR / "L_support"
 
 EXPECTED_OFAT_PARAM_COUNT = 22
 EXPECTED_PNG_COUNT = EXPECTED_OFAT_PARAM_COUNT * 3 + 2
 SCAN_IMIX_AVG_AXIS_LABEL = r"Mixed current density, $\bar{i}_{\mathrm{mix}}$ (A/m$^2$)"
+C_TOT_SCAN_MAX_M = 1.0e3
+C_TOT_SCAN_POINTS = 25
 
 
 def units_to_parentheses(label: str) -> str:
@@ -59,6 +62,22 @@ def apply_scan_plot_style() -> None:
             "mathtext.tt": "Nimbus Sans",
         }
     )
+
+
+def apply_ctot_scan_override(params: dict[str, Any]) -> None:
+    """Extend only the C_tot OFAT scan to the formal high-salt endpoint."""
+    params["ofat_C_tot_max"] = solver.concentration_M_to_mol_per_m3(C_TOT_SCAN_MAX_M)
+    solver.OFAT_C_TOT_X_MAX_M = C_TOT_SCAN_MAX_M
+
+    base_make_ofat_specs = solver.make_ofat_specs
+
+    def make_ofat_specs_with_extended_ctot(p0: dict[str, Any]) -> dict[str, dict[str, Any]]:
+        specs = base_make_ofat_specs(p0)
+        specs["C_tot"]["max"] = solver.concentration_M_to_mol_per_m3(C_TOT_SCAN_MAX_M)
+        specs["C_tot"]["n"] = C_TOT_SCAN_POINTS
+        return specs
+
+    solver.make_ofat_specs = make_ofat_specs_with_extended_ctot
 
 
 def finalize_scan_figure(fig: Any, path: Path) -> None:
@@ -169,7 +188,7 @@ def plot_single_metric_ofat_pngs(params: dict[str, Any]) -> None:
 
 def assert_outputs() -> list[Path]:
     pngs = sorted(FIG_DIR.glob("*.png"))
-    svgs = sorted(SCAN_DIR.glob("**/*.svg"))
+    svgs = sorted(path for path in SCAN_DIR.glob("**/*.svg") if L_SUPPORT_DIR not in path.parents)
     pdfs = sorted(SCAN_DIR.glob("**/*.pdf"))
     if len(pngs) != EXPECTED_PNG_COUNT:
         raise RuntimeError(f"Expected {EXPECTED_PNG_COUNT} PNG outputs, got {len(pngs)}")
@@ -194,6 +213,7 @@ def main() -> None:
     remove_previous_generated_outputs()
 
     params = common.load_same_length_i0_alpha_params()
+    apply_ctot_scan_override(params)
     pair = solver.run_edl_comparison_pair(params, mode="FULL")
     summary = common.summary_from_pair(pair)
     common.validate_same_length_i0_alpha_params(params)

@@ -188,7 +188,7 @@ def main() -> None:
         params, lambda_d, values["E_mix_no"], use_edl=False, use_affine_phi2=use_affine_phi2
     )
     assert_mixed_current("with EDL", i_au_with, i_pd_with, values["i_mix_avg_with"])
-    assert_mixed_current("no EDL", i_au_no, i_pd_no, values["i_mix_avg_no"])
+    assert_mixed_current("w/o EDL", i_au_no, i_pd_no, values["i_mix_avg_no"])
 
     plt.rcParams.update(
         {
@@ -240,7 +240,7 @@ def main() -> None:
         linewidth=1.7,
         linestyle=no_edl_style,
         alpha=0.58,
-        label=r"Au anodic, no EDL",
+        label=r"Au anodic, w/o EDL",
         zorder=3,
     )
     ax.plot(
@@ -250,7 +250,7 @@ def main() -> None:
         linewidth=1.7,
         linestyle=no_edl_style,
         alpha=0.58,
-        label=r"Pd cathodic, no EDL",
+        label=r"Pd cathodic, w/o EDL",
         zorder=3,
     )
 
@@ -331,7 +331,7 @@ def main() -> None:
     ax.text(
         values["E_mix_no"] - 0.012,
         -0.55 * y_limit,
-        rf"no EDL: $E_{{\mathrm{{mix}}}}={fmt_v(values['E_mix_no'])}$",
+        rf"w/o EDL: $E_{{\mathrm{{mix}}}}={fmt_v(values['E_mix_no'])}$",
         ha="right",
         va="top",
         fontsize=8.2,

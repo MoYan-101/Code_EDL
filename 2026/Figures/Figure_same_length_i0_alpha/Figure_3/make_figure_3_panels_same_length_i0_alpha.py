@@ -39,7 +39,7 @@ def plot_panel_c_same_length_i0_alpha(data: Any) -> list[Path]:
         color=base.COLORS["without"],
         linewidth=1.6,
         linestyle=(0, (4, 2)),
-        label="without EDL",
+        label="w/o EDL",
         zorder=2,
     )
     base.add_boundaries(ax, data)
@@ -63,6 +63,76 @@ def plot_panel_c_same_length_i0_alpha(data: Any) -> list[Path]:
     return base.save_panel(fig, "figure_3_panel_c_local_reactant_concentration")
 
 
+def plot_panel_e_same_length_i0_alpha(data: Any) -> list[Path]:
+    (i1_edl, i1_no, i2_edl, i2_no), i_label, _ = base.solver._scaled_current_display(
+        "local_current_density",
+        data.i1_edl_segment,
+        data.i1_no_segment,
+        data.i2_edl_segment,
+        data.i2_no_segment,
+    )
+    i_label = i_label.replace("Local current density, ", "")
+
+    fig, ax = base.make_single_axis_panel()
+
+    mask_i1_edl = base.np.isfinite(i1_edl)
+    mask_i2_edl = base.np.isfinite(i2_edl)
+    ax.fill_between(
+        data.x_nm,
+        0.0,
+        i1_edl,
+        where=mask_i1_edl,
+        interpolate=False,
+        color=base.COLORS["with"],
+        alpha=0.34,
+        linewidth=0.0,
+        zorder=1,
+    )
+    ax.fill_between(
+        data.x_nm,
+        0.0,
+        i2_edl,
+        where=mask_i2_edl,
+        interpolate=False,
+        color=base.COLORS["with_alt"],
+        alpha=0.38,
+        linewidth=0.0,
+        zorder=1,
+    )
+    ax.axhline(0.0, color=base.COLORS["dark"], linewidth=0.55, alpha=0.78, zorder=2)
+
+    ax.plot(data.x_nm, i1_edl, color=base.COLORS["with"], linewidth=2.0, label=r"$i_1$ (Au), with EDL", zorder=4)
+    ax.plot(data.x_nm, i2_edl, color=base.COLORS["with_alt"], linewidth=2.0, label=r"$i_2$ (Pd), with EDL", zorder=4)
+    ax.plot(
+        data.x_nm,
+        i1_no,
+        color=base.COLORS["without"],
+        linewidth=1.7,
+        linestyle=(0, (4, 2)),
+        label=r"$i_1$ (Au), w/o EDL",
+        zorder=3,
+    )
+    ax.plot(
+        data.x_nm,
+        i2_no,
+        color=base.COLORS["without_alt"],
+        linewidth=1.7,
+        linestyle=(0, (2, 2)),
+        label=r"$i_2$ (Pd), w/o EDL",
+        zorder=3,
+    )
+    for xpos in (data.L_Au_nm, data.L_C_nm):
+        ax.axvline(xpos, linestyle=(0, (3, 2)), linewidth=0.9, color=base.COLORS["gray"], alpha=0.85, zorder=5)
+
+    base.style_axes(ax, "x (nm)", i_label, base.PANEL_E_TITLE)
+    base.finite_ylim(ax, i1_edl, i1_no, i2_edl, i2_no, pad_frac=0.08)
+    if base.PANEL_E_YMIN is not None:
+        _, ymax = ax.get_ylim()
+        ax.set_ylim(base.PANEL_E_YMIN, ymax)
+    ax.legend(loc="upper right", fontsize=7.0, handlelength=1.8)
+    return base.save_panel(fig, "figure_3_panel_e_local_current_density")
+
+
 def main() -> None:
     common.ensure_output_dirs()
     params, summary = common.load_inputs_for_scripts()
@@ -79,6 +149,7 @@ def main() -> None:
     base.load_params = load_params
     base.load_summary = load_summary
     base.plot_panel_c = plot_panel_c_same_length_i0_alpha
+    base.plot_panel_e = plot_panel_e_same_length_i0_alpha
     base.PANEL_D_TITLE = "Local overpotential at RP"
     base.PANEL_E_TITLE = "Local current density at RP"
     base.PANEL_E_YMIN = -400.0

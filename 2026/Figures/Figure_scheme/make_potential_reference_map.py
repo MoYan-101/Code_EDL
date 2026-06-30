@@ -112,7 +112,7 @@ def main() -> None:
         ax,
         values["E_mix_no"],
         lane_y["mix"],
-        r"$E_{\mathrm{mix}}$ no EDL",
+        r"$E_{\mathrm{mix}}$ w/o EDL",
         values["E_mix_no"],
         PALETTE["gray"],
         "D",

@@ -51,7 +51,7 @@
   "it0_2_pH_order": 1.0,
   "lambda_D": null,
   "max_bracket_expands": 12,
-  "ofat_C_tot_max": 1000.0,
+  "ofat_C_tot_max": 1000000.0,
   "ofat_C_tot_min": 0.1,
   "ofat_L_gap_max": 1e-06,
   "ofat_L_gap_min": 0.0,

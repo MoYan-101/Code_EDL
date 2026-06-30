@@ -39,7 +39,7 @@ def plot_panel_c_same_length_i0(data: Any) -> list[Path]:
         color=base.COLORS["without"],
         linewidth=1.6,
         linestyle=(0, (4, 2)),
-        label="without EDL",
+        label="w/o EDL",
         zorder=2,
     )
     base.add_boundaries(ax, data)

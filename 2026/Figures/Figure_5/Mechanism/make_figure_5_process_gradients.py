@@ -91,7 +91,7 @@ class MetricSpec:
 SCAN_SPECS = (
     ScanSpec(
         key="Cdl_Au",
-        title=r"$C_{\mathrm{dl,Au}}$",
+        title=r"$C_{\mathrm{H},\mathrm{Au}}$",
         side="Au",
         low=0.05,
         baseline=0.20,
@@ -103,7 +103,7 @@ SCAN_SPECS = (
     ),
     ScanSpec(
         key="Cdl_Pd",
-        title=r"$C_{\mathrm{dl,Pd}}$",
+        title=r"$C_{\mathrm{H},\mathrm{Pd}}$",
         side="Pd",
         low=0.05,
         baseline=0.40,
@@ -140,11 +140,12 @@ SCAN_SPECS = (
 )
 
 METRIC_SPECS = (
-    MetricSpec("sigma_mC_per_m2", r"$\sigma$ (mC m$^{-2}$)", "linear", "{:.1f}"),
+    MetricSpec("sigma_uC_per_cm2", r"$\sigma$ ($\mu$C/cm$^2$)", "linear", "{:.2f}"),
     MetricSpec("phi_RP_mean_mV", r"$\langle\phi_{\mathrm{RP}}\rangle$ (mV)", "linear", "{:.0f}"),
-    MetricSpec("reactant_mean", r"$\langle c/c_{\mathrm{bulk}}\rangle$", "log", "{:.1e}"),
-    MetricSpec("side_current_avg_A_per_m2", r"$\bar{I}_j$ (A m$^{-2}$)", "linear", "{:.2e}"),
-    MetricSpec("E_mix_with_V", r"$E_{\mathrm{mix}}$ (V)", "linear", "{:.3f}", "E_mix_no_V"),
+    MetricSpec("reactant_mean", r"$\langle c_{\mathrm{react}}/c_{\mathrm{bulk}}\rangle$", "log", "{:.1e}"),
+    MetricSpec("eta_mean_mV", r"$\langle\eta_{\mathrm{RP}}\rangle$ (mV)", "linear", "{:.0f}"),
+    MetricSpec("bv_exp_mean", r"$\langle e^{f_\eta}\rangle$", "log", "{:.1e}"),
+    MetricSpec("bv_conc_exp_mean", r"$\langle(c/c_b)e^{f_\eta}\rangle$", "log", "{:.1e}"),
     MetricSpec(
         "i_mix_avg_with_A_per_m2",
         r"$\bar{i}_{\mathrm{mix}}$ (A m$^{-2}$)",
@@ -154,19 +155,39 @@ METRIC_SPECS = (
     ),
 )
 
-COLUMN_FIGURE_STEMS = {
-    "Cdl_Au": "figure_5_column_cdliau_causal_chain",
-    "Cdl_Pd": "figure_5_column_cdlpd_causal_chain",
-    "pzc_Au": "figure_5_column_pzcau_causal_chain",
-    "pzc_Pd": "figure_5_column_pzcpd_causal_chain",
+MECHANISM_FIGURE_STEMS = {
+    "Cdl_Au": "figure_5_mechanism_ch_au_causal_chain",
+    "Cdl_Pd": "figure_5_mechanism_ch_pd_causal_chain",
+    "pzc_Au": "figure_5_mechanism_pzc_au_causal_chain",
+    "pzc_Pd": "figure_5_mechanism_pzc_pd_causal_chain",
 }
 
-COLUMN_FIGURE_TITLES = {
-    "Cdl_Au": r"Figure 5 column: $C_{\mathrm{dl,Au}}$ causal chain",
-    "Cdl_Pd": r"Figure 5 column: $C_{\mathrm{dl,Pd}}$ causal chain",
-    "pzc_Au": r"Figure 5 column: $\mathrm{PZC}_{\mathrm{Au}}$ causal chain",
-    "pzc_Pd": r"Figure 5 column: $\mathrm{PZC}_{\mathrm{Pd}}$ causal chain",
+POLARIZATION_FIGURE_STEMS = {
+    "Cdl_Au": "figure_5_polarization_ch_au",
+    "Cdl_Pd": "figure_5_polarization_ch_pd",
+    "pzc_Au": "figure_5_polarization_pzc_au",
+    "pzc_Pd": "figure_5_polarization_pzc_pd",
 }
+
+MECHANISM_FIGURE_TITLES = {
+    "Cdl_Au": r"Figure 5 mechanism: $C_{\mathrm{H},\mathrm{Au}}$ causal chain",
+    "Cdl_Pd": r"Figure 5 mechanism: $C_{\mathrm{H},\mathrm{Pd}}$ causal chain",
+    "pzc_Au": r"Figure 5 mechanism: $\mathrm{PZC}_{\mathrm{Au}}$ causal chain",
+    "pzc_Pd": r"Figure 5 mechanism: $\mathrm{PZC}_{\mathrm{Pd}}$ causal chain",
+}
+
+POLARIZATION_FIGURE_TITLES = {
+    "Cdl_Au": r"Figure 5 polarization: $C_{\mathrm{H},\mathrm{Au}}$ scan",
+    "Cdl_Pd": r"Figure 5 polarization: $C_{\mathrm{H},\mathrm{Pd}}$ scan",
+    "pzc_Au": r"Figure 5 polarization: $\mathrm{PZC}_{\mathrm{Au}}$ scan",
+    "pzc_Pd": r"Figure 5 polarization: $\mathrm{PZC}_{\mathrm{Pd}}$ scan",
+}
+
+MECHANISM_FIGSIZE = (3.60, 11.55)
+POLARIZATION_FIGSIZE = (6.1, 4.35)
+POLARIZATION_FONT_SCALE = 1.45
+PLOT_CURRENT_UNIT_A = 1.0e-9
+PLOT_CURRENT_LABEL = r"Current (10$^{-3}$ $\mu$A)"
 
 SCHEMATIC_CASE_SPECS = (
     ("low", 0.52, (0, (3, 2))),
@@ -180,12 +201,13 @@ def apply_style() -> None:
         {
             "font.family": "sans-serif",
             "font.sans-serif": ["Helvetica", "Nimbus Sans", "Arial", "DejaVu Sans", "sans-serif"],
-            "font.size": 7.4,
+            "font.size": 8.2,
             "axes.spines.top": True,
             "axes.spines.right": True,
             "axes.linewidth": 0.75,
             "axes.grid": False,
             "legend.frameon": False,
+            "savefig.bbox": None,
             "svg.fonttype": "none",
             "pdf.fonttype": 42,
             "ps.fonttype": 42,
@@ -198,6 +220,14 @@ def apply_style() -> None:
             "mathtext.tt": "Nimbus Sans",
         }
     )
+
+
+def polarization_font_scale(spec: ScanSpec) -> float:
+    return POLARIZATION_FONT_SCALE
+
+
+def polarization_figsize(spec: ScanSpec) -> tuple[float, float]:
+    return POLARIZATION_FIGSIZE
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -296,6 +326,8 @@ def summarize_case(
         reactant = "R1"
         reactant_values = np.asarray(solver.safe_exp(-float(params["z_R1"]) * phi_tilde), dtype=float)
         eta_values = e_mix - float(res["E1_eq_eff"]) - phi_rp_v
+        beta = float(derived["F"]) / (float(derived["R"]) * float(derived["T"]))
+        bv_exp_values = np.asarray(solver.safe_exp((1.0 - float(params["alpha1"])) * beta * eta_values), dtype=float)
         side_current_avg = float(res["I_Au_avg_A_per_m2"])
     else:
         mask = np.asarray(res["mask_Pd"], dtype=bool)
@@ -304,11 +336,16 @@ def summarize_case(
         reactant = "O2"
         reactant_values = np.asarray(solver.safe_exp(-float(params["z_O2"]) * phi_tilde), dtype=float)
         eta_values = e_mix - float(res["E2_eq_eff"]) - phi_rp_v
+        beta = float(derived["F"]) / (float(derived["R"]) * float(derived["T"]))
+        bv_exp_values = np.asarray(solver.safe_exp(-float(params["alpha2"]) * beta * eta_values), dtype=float)
         side_current_avg = float(res["I_Pd_avg_A_per_m2"])
 
     phi_mean_v = segment_mean(phi_rp_v, x_tilde, mask, segment_length)
     reactant_mean = segment_mean(reactant_values, x_tilde, mask, segment_length)
     eta_mean_v = segment_mean(eta_values, x_tilde, mask, segment_length)
+    bv_exp_mean = segment_mean(bv_exp_values, x_tilde, mask, segment_length)
+    bv_conc_exp_values = reactant_values * bv_exp_values
+    bv_conc_exp_mean = segment_mean(bv_conc_exp_values, x_tilde, mask, segment_length)
     sigma_c_per_m2 = effective_cdl(params, derived, spec.side) * (e_mix - phi_mean_v - pzc)
 
     return {
@@ -322,12 +359,17 @@ def summarize_case(
         "parameter_display_unit": spec.display_unit,
         "sigma_C_per_m2": float(sigma_c_per_m2),
         "sigma_mC_per_m2": float(1000.0 * sigma_c_per_m2),
+        "sigma_uC_per_cm2": float(100.0 * sigma_c_per_m2),
         "phi_RP_mean_V": float(phi_mean_v),
         "phi_RP_mean_mV": float(1000.0 * phi_mean_v),
         "reactant_mean": float(reactant_mean),
         "log10_reactant_mean": float(np.log10(reactant_mean)),
         "eta_mean_V": float(eta_mean_v),
         "eta_mean_mV": float(1000.0 * eta_mean_v),
+        "bv_exp_mean": float(bv_exp_mean),
+        "log10_bv_exp_mean": float(np.log10(bv_exp_mean)),
+        "bv_conc_exp_mean": float(bv_conc_exp_mean),
+        "log10_bv_conc_exp_mean": float(np.log10(bv_conc_exp_mean)),
         "side_current_avg_A_per_m2": float(side_current_avg),
         "E_mix_with_V": e_mix,
         "E_mix_no_V": float(no_edl["E_mix"]),
@@ -362,12 +404,17 @@ def write_csv(rows: list[dict[str, Any]]) -> None:
         "parameter_display_unit",
         "sigma_C_per_m2",
         "sigma_mC_per_m2",
+        "sigma_uC_per_cm2",
         "phi_RP_mean_V",
         "phi_RP_mean_mV",
         "reactant_mean",
         "log10_reactant_mean",
         "eta_mean_V",
         "eta_mean_mV",
+        "bv_exp_mean",
+        "log10_bv_exp_mean",
+        "bv_conc_exp_mean",
+        "log10_bv_conc_exp_mean",
         "side_current_avg_A_per_m2",
         "E_mix_with_V",
         "E_mix_no_V",
@@ -402,6 +449,13 @@ def average_current_density(params: dict[str, Any], current: np.ndarray | float)
     return value
 
 
+def plot_current_units(current_abs_A: np.ndarray | float) -> np.ndarray | float:
+    values = np.asarray(current_abs_A, dtype=float) / PLOT_CURRENT_UNIT_A
+    if np.ndim(current_abs_A) == 0:
+        return float(values)
+    return values
+
+
 def build_schematic_case(
     base_params: dict[str, Any],
     spec: ScanSpec,
@@ -422,6 +476,9 @@ def build_schematic_case(
         "i_mix_avg_A_per_m2": float(result["i_mix_avg_A_per_m2"]),
         "I_Au_avg_A_per_m2": float(result["I_Au_avg_A_per_m2"]),
         "I_Pd_avg_A_per_m2": float(result["I_Pd_avg_A_per_m2"]),
+        "i_mix_current_1e_minus_3_uA": float(plot_current_units(result["i_mix_abs_A"])),
+        "I_Au_current_1e_minus_3_uA": float(plot_current_units(result["I_Au_abs_A"])),
+        "I_Pd_current_1e_minus_3_uA": float(plot_current_units(result["I_Pd_abs_A"])),
         "E1_eq_eff": float(result["E1_eq_eff"]),
         "E2_eq_eff": float(result["E2_eq_eff"]),
         "params": params,
@@ -438,6 +495,8 @@ def build_schematic_case(
             E=np.asarray(curve["E"], dtype=float),
             I_Au_avg_curve=np.asarray(average_current_density(params, curve["I_Au"]), dtype=float),
             I_Pd_avg_curve=np.asarray(average_current_density(params, curve["I_Pd"]), dtype=float),
+            I_Au_current_curve=np.asarray(plot_current_units(curve["I_Au_abs_A"]), dtype=float),
+            I_Pd_current_curve=np.asarray(plot_current_units(curve["I_Pd_abs_A"]), dtype=float),
         )
     return case
 
@@ -464,6 +523,9 @@ def write_schematic_csv(schematic: dict[str, list[dict[str, Any]]]) -> None:
         "i_mix_avg_A_per_m2",
         "I_Au_avg_A_per_m2",
         "I_Pd_avg_A_per_m2",
+        "i_mix_current_1e_minus_3_uA",
+        "I_Au_current_1e_minus_3_uA",
+        "I_Pd_current_1e_minus_3_uA",
     ]
     with SCHEMATIC_CSV_OUT.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -531,9 +593,14 @@ def build_polarization_curve_data(
                     "i_mix_avg_A_per_m2": float(case["i_mix_avg_A_per_m2"]),
                     "I_Au_avg_A_per_m2": float(case["I_Au_avg_A_per_m2"]),
                     "I_Pd_avg_A_per_m2": float(case["I_Pd_avg_A_per_m2"]),
+                    "i_mix_current_1e_minus_3_uA": float(case["i_mix_current_1e_minus_3_uA"]),
+                    "I_Au_current_1e_minus_3_uA": float(case["I_Au_current_1e_minus_3_uA"]),
+                    "I_Pd_current_1e_minus_3_uA": float(case["I_Pd_current_1e_minus_3_uA"]),
                     "E": np.asarray(curve["E"], dtype=float),
                     "I_Au_avg_curve": np.asarray(average_current_density(params, curve["I_Au"]), dtype=float),
                     "I_Pd_avg_curve": np.asarray(average_current_density(params, curve["I_Pd"]), dtype=float),
+                    "I_Au_current_curve": np.asarray(plot_current_units(curve["I_Au_abs_A"]), dtype=float),
+                    "I_Pd_current_curve": np.asarray(plot_current_units(curve["I_Pd_abs_A"]), dtype=float),
                 }
             )
 
@@ -568,6 +635,8 @@ def write_polarization_curve_csv(curve_data: dict[str, list[dict[str, Any]]]) ->
         "E_V",
         "I_Au_avg_A_per_m2",
         "I_Pd_avg_A_per_m2",
+        "I_Au_current_1e_minus_3_uA",
+        "I_Pd_current_1e_minus_3_uA",
         "delta_I_Au_vs_base",
         "delta_I_Pd_vs_base",
         "rel_delta_I_Au_vs_base",
@@ -588,6 +657,8 @@ def write_polarization_curve_csv(curve_data: dict[str, list[dict[str, Any]]]) ->
                             "E_V": float(e_value),
                             "I_Au_avg_A_per_m2": float(case["I_Au_avg_curve"][idx]),
                             "I_Pd_avg_A_per_m2": float(case["I_Pd_avg_curve"][idx]),
+                            "I_Au_current_1e_minus_3_uA": float(case["I_Au_current_curve"][idx]),
+                            "I_Pd_current_1e_minus_3_uA": float(case["I_Pd_current_curve"][idx]),
                             "delta_I_Au_vs_base": float(case["delta_I_Au_vs_base"][idx]),
                             "delta_I_Pd_vs_base": float(case["delta_I_Pd_vs_base"][idx]),
                             "rel_delta_I_Au_vs_base": float(case["rel_delta_I_Au_vs_base"][idx]),
@@ -605,6 +676,8 @@ def require_finite_curve_data(curve_data: dict[str, list[dict[str, Any]]]) -> No
         "E",
         "I_Au_avg_curve",
         "I_Pd_avg_curve",
+        "I_Au_current_curve",
+        "I_Pd_current_curve",
         "delta_I_Au_vs_base",
         "delta_I_Pd_vs_base",
         "rel_delta_I_Au_vs_base",
@@ -623,6 +696,9 @@ def require_finite_curve_data(curve_data: dict[str, list[dict[str, Any]]]) -> No
                 "i_mix_avg_A_per_m2",
                 "I_Au_avg_A_per_m2",
                 "I_Pd_avg_A_per_m2",
+                "i_mix_current_1e_minus_3_uA",
+                "I_Au_current_1e_minus_3_uA",
+                "I_Pd_current_1e_minus_3_uA",
                 "max_abs_rel_delta_I_Au_vs_base",
                 "max_abs_rel_delta_I_Pd_vs_base",
             ):
@@ -636,12 +712,17 @@ def require_finite_rows(rows: list[dict[str, Any]]) -> None:
         "parameter_value_display",
         "sigma_C_per_m2",
         "sigma_mC_per_m2",
+        "sigma_uC_per_cm2",
         "phi_RP_mean_V",
         "phi_RP_mean_mV",
         "reactant_mean",
         "log10_reactant_mean",
         "eta_mean_V",
         "eta_mean_mV",
+        "bv_exp_mean",
+        "log10_bv_exp_mean",
+        "bv_conc_exp_mean",
+        "log10_bv_conc_exp_mean",
         "side_current_avg_A_per_m2",
         "E_mix_with_V",
         "E_mix_no_V",
@@ -702,19 +783,33 @@ def parameter_axis_label(spec: ScanSpec) -> str:
     return f"{spec.title}\n({spec.display_unit})"
 
 
+def reactant_symbol(spec: ScanSpec | None) -> str:
+    if spec is None:
+        return r"\mathrm{Red}_1/\mathrm{Ox}_2"
+    return r"\mathrm{Red}_1" if spec.side == "Au" else r"\mathrm{Ox}_2"
+
+
+def metric_label(metric: MetricSpec, spec: ScanSpec | None = None) -> str:
+    if metric.key == "reactant_mean":
+        return rf"$\langle c_{{{reactant_symbol(spec)}}}/c_{{\mathrm{{bulk}}}}\rangle$"
+    if metric.key == "bv_conc_exp_mean":
+        return rf"$\langle(c_{{{reactant_symbol(spec)}}}/c_b)e^{{f_\eta}}\rangle$"
+    return metric.label
+
+
 def formula_symbols(spec: ScanSpec | None) -> tuple[str, str]:
     if spec is None:
-        return r"j", r"k"
+        return r"j", r"\mathrm{Red}_1/\mathrm{Ox}_2"
     side = r"\mathrm{Au}" if spec.side == "Au" else r"\mathrm{Pd}"
-    reactant = r"\mathrm{R1}" if spec.side == "Au" else r"\mathrm{O2}"
+    reactant = reactant_symbol(spec)
     return side, reactant
 
 
 def formula_for_metric(metric: MetricSpec, spec: ScanSpec | None = None) -> str:
     j, k = formula_symbols(spec)
-    if metric.key == "sigma_mC_per_m2":
+    if metric.key == "sigma_uC_per_cm2":
         return (
-            rf"$\sigma_{{{j}}}=C_{{\mathrm{{dl}},{j}}}\Delta\phi_{{{j}}}$"
+            rf"$\sigma_{{{j}}}=C_{{H,{j}}}\Delta\phi_{{{j}}}$"
             "\n"
             rf"$\Delta\phi_{{{j}}}=E_{{\mathrm{{mix}}}}-\langle\phi_{{\mathrm{{RP}}}}\rangle_{{{j}}}-\mathrm{{PZC}}_{{{j}}}$"
         )
@@ -727,6 +822,24 @@ def formula_for_metric(metric: MetricSpec, spec: ScanSpec | None = None) -> str:
         return (
             rf"$\langle c_{{{k}}}/c_b\rangle_{{{j}}}"
             rf"=\langle e^{{-z_{{{k}}}\tilde{{\phi}}_s}}\rangle_{{{j}}}$"
+        )
+    if metric.key == "eta_mean_mV":
+        if spec is None:
+            return rf"$\eta_{{{j}}}=E_{{\mathrm{{mix}}}}-E_{{{j},\mathrm{{eq}}}}-\phi_{{\mathrm{{RP}}}}(x)$"
+        if spec is not None and spec.side == "Au":
+            return rf"$\eta_{{{j}}}=E_{{\mathrm{{mix}}}}-E_{{1,\mathrm{{eq}}}}-\phi_{{\mathrm{{RP}}}}(x)$"
+        return rf"$\eta_{{{j}}}=E_{{\mathrm{{mix}}}}-E_{{2,\mathrm{{eq}}}}-\phi_{{\mathrm{{RP}}}}(x)$"
+    if metric.key == "bv_exp_mean":
+        if spec is None:
+            return r"$f_\eta=(1-\alpha_1)F\eta_{\mathrm{Au}}/RT$ or $-\alpha_2F\eta_{\mathrm{Pd}}/RT$"
+        if spec is not None and spec.side == "Au":
+            return rf"$\langle e^{{f_\eta}}\rangle_{{{j}}}=\langle e^{{(1-\alpha_1)F\eta_{{{j}}}/RT}}\rangle_{{{j}}}$"
+        return rf"$\langle e^{{f_\eta}}\rangle_{{{j}}}=\langle e^{{-\alpha_2F\eta_{{{j}}}/RT}}\rangle_{{{j}}}$"
+    if metric.key == "bv_conc_exp_mean":
+        return (
+            rf"$\langle(c_{{{k}}}/c_b)e^{{f_\eta}}\rangle_{{{j}}}$"
+            "\n"
+            r"dimensionless BV driving weight"
         )
     if metric.key == "side_current_avg_A_per_m2":
         return (
@@ -762,7 +875,7 @@ def style_formula_axis(ax: plt.Axes, metric: MetricSpec, formula: str, *, show_t
     ax.text(
         0.0,
         0.60,
-        metric.label,
+        metric_label(metric),
         ha="left",
         va="center",
         fontsize=5.8,
@@ -875,7 +988,7 @@ def style_metric_axis(
             ax.text(
                 no_edl_val,
                 1.015,
-                "no EDL",
+                "w/o EDL",
                 transform=ax.get_xaxis_transform(),
                 ha="center",
                 va="bottom",
@@ -885,6 +998,7 @@ def style_metric_axis(
             )
 
     ax.tick_params(axis="both", length=2.4, width=0.65, pad=1.5, labelsize=5.9)
+    ax.tick_params(axis="x", labelbottom=show_x_label)
     for spine in ("left", "right", "top", "bottom"):
         ax.spines[spine].set_visible(True)
         ax.spines[spine].set_linewidth(0.72)
@@ -900,12 +1014,12 @@ def style_metric_axis(
         )
 
     if col_idx == 0:
-        ax.set_ylabel(metric.label, fontsize=6.9, labelpad=3.8)
+        ax.set_ylabel(metric_label(metric, spec), fontsize=6.9, labelpad=3.8)
     else:
         ax.set_ylabel("")
 
     if show_x_label:
-        ax.set_xlabel(metric.label, fontsize=6.6, labelpad=2.3)
+        ax.set_xlabel(metric_label(metric, spec), fontsize=6.6, labelpad=2.3)
     else:
         ax.set_xlabel("")
 
@@ -1015,7 +1129,7 @@ def annotate_causal_low_base_high(ax: plt.Axes, rows: list[dict[str, Any]], metr
             textcoords="offset points",
             ha=ha,
             va=va,
-            fontsize=6.4,
+            fontsize=7.2,
             color=COLORS["dark"],
             clip_on=False,
             zorder=10,
@@ -1088,13 +1202,14 @@ def plot_causal_tile(
     add_gradient_line_by_values(ax, x, y, x, cmap, linewidth=2.05)
     annotate_causal_low_base_high(ax, scan_rows, metric, marker_color)
     format_parameter_axis(ax, spec)
-    ax.set_title(metric.label, loc="left", fontsize=9.7, pad=3.4, color=COLORS["dark"])
+    ax.set_title(metric_label(metric, spec), loc="left", fontsize=11.0, pad=3.8, color=COLORS["dark"])
     if show_xlabel:
-        ax.set_xlabel(f"{spec.title} ({spec.display_unit})", fontsize=8.4, labelpad=2.0)
+        ax.set_xlabel(f"{spec.title} ({spec.display_unit})", fontsize=9.6, labelpad=2.2)
     else:
         ax.set_xlabel("")
     ax.set_ylabel("")
-    ax.tick_params(axis="both", length=2.8, width=0.75, pad=1.8, labelsize=8.0)
+    ax.tick_params(axis="both", length=3.0, width=0.78, pad=1.9, labelsize=9.0)
+    ax.tick_params(axis="x", labelbottom=show_xlabel)
     if metric.scale == "linear":
         ax.yaxis.set_major_locator(MaxNLocator(nbins=3))
     formula = formula_for_metric(metric, spec)
@@ -1106,7 +1221,7 @@ def plot_causal_tile(
         transform=ax.transAxes,
         ha="left",
         va=formula_va,
-        fontsize=6.9,
+        fontsize=7.7,
         color=COLORS["gray"],
         linespacing=1.02,
         bbox=dict(facecolor="white", edgecolor="none", alpha=0.86, pad=1.3),
@@ -1128,9 +1243,9 @@ def polarization_ylim(cases: list[dict[str, Any]]) -> float:
             value
             for case in cases
             for value in (
-                float(case["I_Au_avg_A_per_m2"]),
-                float(case["I_Pd_avg_A_per_m2"]),
-                float(case["i_mix_avg_A_per_m2"]),
+                float(case["I_Au_current_1e_minus_3_uA"]),
+                float(case["I_Pd_current_1e_minus_3_uA"]),
+                float(case["i_mix_current_1e_minus_3_uA"]),
             )
         ],
         dtype=float,
@@ -1150,12 +1265,12 @@ def polarization_summary_lines(spec: ScanSpec, cases: list[dict[str, Any]]) -> l
         lines.append(
             rf"{case_name}: {param_value}, "
             rf"$E$={float(case['E_mix']):.3f} V, "
-            rf"$|i|$={float(case['i_mix_avg_A_per_m2']):.2e}"
+            rf"$|I|$={float(case['i_mix_current_1e_minus_3_uA']):.2g}"
         )
-    i_low = float(named["low"]["i_mix_avg_A_per_m2"])
-    i_high = float(named["high"]["i_mix_avg_A_per_m2"])
+    i_low = float(named["low"]["i_mix_current_1e_minus_3_uA"])
+    i_high = float(named["high"]["i_mix_current_1e_minus_3_uA"])
     if i_low > 0.0:
-        lines.append(rf"low$\to$high: $\Delta E$={e_high - e_low:+.3f} V, $|i|\times$={i_high / i_low:.2g}")
+        lines.append(rf"low$\to$high: $\Delta E$={e_high - e_low:+.3f} V, $|I|\times$={i_high / i_low:.2g}")
     rel_key = f"max_abs_rel_delta_I_{coupled_side}_vs_base"
     low_coupling_pct = 100.0 * float(named["low"][rel_key])
     high_coupling_pct = 100.0 * float(named["high"][rel_key])
@@ -1191,6 +1306,7 @@ def plot_polarization_summary_panel(ax: plt.Axes, spec: ScanSpec, cases: list[di
 
 
 def plot_true_polarization_panel(ax: plt.Axes, spec: ScanSpec, cases: list[dict[str, Any]]) -> None:
+    font_scale = polarization_font_scale(spec)
     varied_side = spec.side
     coupled_side = opposite_side(spec.side)
     y_limit = polarization_ylim(cases)
@@ -1198,7 +1314,7 @@ def plot_true_polarization_panel(ax: plt.Axes, spec: ScanSpec, cases: list[dict[
     ax.axhline(0.0, color=COLORS["dark"], linewidth=0.78, zorder=1)
 
     for side in ("Au", "Pd"):
-        curve_key = f"I_{side}_avg_curve"
+        curve_key = f"I_{side}_current_curve"
         is_varied = side == varied_side
         for case in cases:
             case_name = str(case["case"])
@@ -1224,7 +1340,10 @@ def plot_true_polarization_panel(ax: plt.Axes, spec: ScanSpec, cases: list[dict[
         e_mix = float(case["E_mix"])
         ax.scatter(
             [e_mix, e_mix],
-            [float(case["I_Au_avg_A_per_m2"]), float(case["I_Pd_avg_A_per_m2"])],
+            [
+                float(case["I_Au_current_1e_minus_3_uA"]),
+                float(case["I_Pd_current_1e_minus_3_uA"]),
+            ],
             s=30 if case_name == "base" else 22,
             color=[COLORS["au_curve"], COLORS["pd_curve"]],
             edgecolor="white",
@@ -1260,7 +1379,7 @@ def plot_true_polarization_panel(ax: plt.Axes, spec: ScanSpec, cases: list[dict[
         r"$E_{\mathrm{mix}}$ shift",
         ha="center",
         va="bottom",
-        fontsize=7.0,
+        fontsize=7.0 * font_scale,
         color=COLORS["dark"],
     )
 
@@ -1271,15 +1390,24 @@ def plot_true_polarization_panel(ax: plt.Axes, spec: ScanSpec, cases: list[dict[
         Line2D([0], [0], color=COLORS["case_base"], linewidth=1.3, linestyle="-", label="base"),
         Line2D([0], [0], color=COLORS["case_high"], linewidth=1.3, linestyle=(0, (5, 2)), label="high"),
     ]
-    ax.legend(handles=handles, loc="upper left", fontsize=7.0, handlelength=2.6, ncols=2, columnspacing=1.0)
+    ax.legend(
+        handles=handles,
+        loc="upper left",
+        fontsize=7.0 * font_scale,
+        handlelength=2.4,
+        ncols=1,
+        columnspacing=0.85,
+        labelspacing=0.34,
+        borderaxespad=0.25,
+    )
     ax.set_xlim(float(np.min(e_values)), float(np.max(e_values)))
     ax.set_ylim(-y_limit, y_limit)
-    ax.set_title("True polarization curves", loc="left", fontsize=9.4, pad=4.0, color=COLORS["dark"])
-    ax.set_xlabel("Potential (V vs. RHE)", fontsize=8.0, labelpad=2.5)
-    ax.set_ylabel(r"Average half-current (A m$^{-2}$)", fontsize=8.0, labelpad=3.0)
+    ax.set_title("True polarization curves", loc="left", fontsize=9.4 * font_scale, pad=4.0, color=COLORS["dark"])
+    ax.set_xlabel("Potential (V vs. RHE)", fontsize=8.0 * font_scale, labelpad=2.5)
+    ax.set_ylabel(PLOT_CURRENT_LABEL, fontsize=8.0 * font_scale, labelpad=3.0)
     ax.xaxis.set_major_locator(MaxNLocator(nbins=6))
     ax.yaxis.set_major_locator(MaxNLocator(nbins=5))
-    ax.tick_params(axis="both", length=2.7, width=0.75, pad=1.6, labelsize=7.1)
+    ax.tick_params(axis="both", length=2.7, width=0.75, pad=1.6, labelsize=7.1 * font_scale)
     for spine in ("left", "right", "top", "bottom"):
         ax.spines[spine].set_visible(True)
         ax.spines[spine].set_linewidth(0.74)
@@ -1339,7 +1467,7 @@ def plot_process_gradients(rows: list[dict[str, Any]]) -> None:
     fig.text(
         0.02,
         0.966,
-        "Each column varies one parameter only. Dashed horizontal lines mark the Figure 5 baseline; dashed vertical lines in the bottom rows mark the no-EDL output.",
+        "Each column varies one parameter only. Dashed horizontal lines mark the Figure 5 baseline; dashed vertical lines in the bottom rows mark the w/o EDL output.",
         ha="left",
         va="top",
         fontsize=7.0,
@@ -1362,28 +1490,29 @@ def plot_process_gradients(rows: list[dict[str, Any]]) -> None:
     plt.close(fig)
 
 
-def column_output_paths(spec: ScanSpec) -> tuple[Path, Path]:
-    stem = COLUMN_FIGURE_STEMS[spec.key]
+def mechanism_output_paths(spec: ScanSpec) -> tuple[Path, Path]:
+    stem = MECHANISM_FIGURE_STEMS[spec.key]
     return OUT_DIR / f"{stem}_{OUTPUT_TAG}.png", OUT_DIR / f"{stem}_{OUTPUT_TAG}.svg"
 
 
-def plot_single_column_figure(
+def polarization_output_paths(spec: ScanSpec) -> tuple[Path, Path]:
+    stem = POLARIZATION_FIGURE_STEMS[spec.key]
+    return OUT_DIR / f"{stem}_{OUTPUT_TAG}.png", OUT_DIR / f"{stem}_{OUTPUT_TAG}.svg"
+
+
+def plot_single_mechanism_figure(
     rows: list[dict[str, Any]],
     spec: ScanSpec,
-    curve_cases: list[dict[str, Any]],
 ) -> tuple[Path, Path]:
     scan_rows = rows_for_scan(rows, spec.key)
     cmap = AU_CMAP if spec.side == "Au" else PD_CMAP
     marker_color = COLORS["au_dark"] if spec.side == "Au" else COLORS["pd_dark"]
 
-    fig = plt.figure(figsize=(13.3, 7.5), constrained_layout=False)
-    outer = fig.add_gridspec(2, 1, height_ratios=[1.18, 0.94], hspace=0.36)
-    causal_outer_gs = outer[0].subgridspec(1, 3, width_ratios=[0.10, 1.0, 0.10], wspace=0.0)
-    causal_gs = causal_outer_gs[0, 1].subgridspec(2, 3, hspace=0.60, wspace=0.34)
-    polarization_gs = outer[1].subgridspec(1, 4, width_ratios=[0.22, 0.82, 0.46, 0.12], wspace=0.12)
+    fig = plt.figure(figsize=MECHANISM_FIGSIZE, constrained_layout=False)
+    gs = fig.add_gridspec(len(METRIC_SPECS), 1, hspace=0.53)
 
     for row_idx, metric in enumerate(METRIC_SPECS):
-        ax = fig.add_subplot(causal_gs[row_idx // 3, row_idx % 3])
+        ax = fig.add_subplot(gs[row_idx, 0])
         plot_causal_tile(
             ax,
             scan_rows,
@@ -1391,68 +1520,103 @@ def plot_single_column_figure(
             metric,
             cmap,
             marker_color,
-            show_xlabel=row_idx >= 3,
+            show_xlabel=row_idx == len(METRIC_SPECS) - 1,
         )
         if row_idx == 0:
-            ax.text(0.98, 0.96, f"track {spec.side}", transform=ax.transAxes, ha="right", va="top", fontsize=6.7, color=marker_color)
-
-    pol_ax = fig.add_subplot(polarization_gs[0, 1])
-    summary_ax = fig.add_subplot(polarization_gs[0, 2])
-    plot_true_polarization_panel(pol_ax, spec, curve_cases)
-    plot_polarization_summary_panel(summary_ax, spec, curve_cases)
+            ax.text(
+                0.98,
+                0.96,
+                f"track {spec.side}",
+                transform=ax.transAxes,
+                ha="right",
+                va="top",
+                fontsize=7.6,
+                color=marker_color,
+            )
 
     fig.suptitle(
-        COLUMN_FIGURE_TITLES[spec.key],
-        x=0.025,
-        y=0.985,
+        MECHANISM_FIGURE_TITLES[spec.key].replace("Figure 5 mechanism: ", "Figure 5 mechanism:\n"),
+        x=0.065,
+        y=0.992,
         ha="left",
         va="top",
-        fontsize=12.2,
+        fontsize=12.6,
         color=COLORS["dark"],
+        linespacing=1.0,
     )
     fig.text(
-        0.025,
-        0.955,
-        f"Only {spec.title} is scanned. Top: causal quantities versus scanned parameter. Bottom: true low/base/high polarization curves plus real opposite-side coupling.",
+        0.065,
+        0.935,
+        f"Only {spec.title} is scanned.\nPanels are side-averaged over the tracked active region.",
         ha="left",
         va="top",
-        fontsize=8.0,
+        fontsize=7.9,
         color=COLORS["gray"],
+        linespacing=1.05,
     )
     fig.text(
         0.50,
         0.018,
-        "Dashed parameter markers show the baseline condition; blue no-EDL references appear only on output quantities.",
+        "L, B, and H mark low, baseline, and high scan values.",
         ha="center",
         va="bottom",
-        fontsize=7.2,
+        fontsize=7.8,
         color=COLORS["gray"],
     )
-    fig.subplots_adjust(left=0.055, right=0.985, bottom=0.078, top=0.905)
+    fig.subplots_adjust(left=0.16, right=0.965, bottom=0.075, top=0.865)
 
-    png_path, svg_path = column_output_paths(spec)
+    png_path, svg_path = mechanism_output_paths(spec)
     fig.savefig(png_path, dpi=600, bbox_inches="tight")
     fig.savefig(svg_path, bbox_inches="tight")
     plt.close(fig)
     return png_path, svg_path
 
 
-def plot_column_figures(
+def plot_single_polarization_figure(
+    spec: ScanSpec,
+    curve_cases: list[dict[str, Any]],
+) -> tuple[Path, Path]:
+    font_scale = polarization_font_scale(spec)
+    fig, ax = plt.subplots(figsize=polarization_figsize(spec), constrained_layout=False)
+    plot_true_polarization_panel(ax, spec, curve_cases)
+    ax.set_title(POLARIZATION_FIGURE_TITLES[spec.key], loc="left", fontsize=9.6 * font_scale, pad=4.0, color=COLORS["dark"])
+    fig.subplots_adjust(left=0.15, right=0.985, bottom=0.19, top=0.88)
+
+    png_path, svg_path = polarization_output_paths(spec)
+    fig.savefig(png_path, dpi=450)
+    fig.savefig(svg_path)
+    plt.close(fig)
+    return png_path, svg_path
+
+
+def plot_mechanism_and_polarization_figures(
     rows: list[dict[str, Any]],
     curve_data: dict[str, list[dict[str, Any]]],
 ) -> list[Path]:
     saved: list[Path] = []
     for spec in SCAN_SPECS:
-        png_path, svg_path = plot_single_column_figure(rows, spec, curve_data[spec.key])
-        saved.extend([png_path, svg_path])
+        mechanism_png, mechanism_svg = plot_single_mechanism_figure(rows, spec)
+        polarization_png, polarization_svg = plot_single_polarization_figure(spec, curve_data[spec.key])
+        saved.extend([mechanism_png, mechanism_svg, polarization_png, polarization_svg])
     return saved
+
+
+def cleanup_stale_column_exports() -> None:
+    for path in sorted(OUT_DIR.glob(f"figure_5_column_*_{OUTPUT_TAG}.*")):
+        if path.suffix.lower() in {".png", ".svg"}:
+            path.unlink()
 
 
 def assert_outputs() -> None:
     expected_exports = {PNG_OUT.resolve(), SVG_OUT.resolve()}
     for spec in SCAN_SPECS:
-        expected_exports.update(path.resolve() for path in column_output_paths(spec))
-    actual_exports = {path.resolve() for path in OUT_DIR.glob(f"*_{OUTPUT_TAG}.*")}
+        expected_exports.update(path.resolve() for path in mechanism_output_paths(spec))
+        expected_exports.update(path.resolve() for path in polarization_output_paths(spec))
+    actual_exports = {
+        path.resolve()
+        for path in OUT_DIR.glob(f"*_{OUTPUT_TAG}.*")
+        if path.suffix.lower() in {".png", ".svg"}
+    }
     if actual_exports != expected_exports:
         raise RuntimeError(f"Unexpected gradient exports: {sorted(str(path) for path in actual_exports)}")
     for path in (CSV_OUT, SCHEMATIC_CSV_OUT, CURVE_CSV_OUT):
@@ -1466,6 +1630,7 @@ def assert_outputs() -> None:
 def main() -> None:
     params = load_json(PARAMS_PATH)
     summary = load_json(SUMMARY_PATH)
+    cleanup_stale_column_exports()
     _, no_edl = validate_baseline(params, summary)
     rows = build_sweep_rows(params, no_edl)
     require_finite_rows(rows)
@@ -1477,7 +1642,7 @@ def main() -> None:
     write_schematic_csv(schematic)
     write_polarization_curve_csv(curve_data)
     plot_process_gradients(rows)
-    small_paths = plot_column_figures(rows, curve_data)
+    small_paths = plot_mechanism_and_polarization_figures(rows, curve_data)
     assert_outputs()
 
     print(f"Verified baseline E_mix_with = {float(summary['E_mix_with']):.15g} V")
