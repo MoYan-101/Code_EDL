@@ -51,9 +51,7 @@ N_DISTANCE = 180
 DISTANCE_LAMBDA_MAX = 5.0
 METAL_X0_NM = -2.35
 METAL_X1_NM = -1.18
-IHP_X_NM = -0.58
 RP_X_NM = 0.0
-IHP_DROP_FRACTION = 0.68
 
 sys.path.insert(0, str(SOLVER_DIR))
 import Solve_Emix_updating as solver  # noqa: E402
@@ -558,12 +556,11 @@ def save_traceability_inputs(params: dict[str, Any], summary: dict[str, Any]) ->
     write_json(INPUTS_DIR / f"summary_compare_{OUTPUT_TAG}.json", summary)
     config = {
         "output_tag": OUTPUT_TAG,
-        "description": "Semi-quantitative EDL scheme for Figure 5 C_H and PZC scans.",
+        "description": "Semi-quantitative EDL scheme for Figure 5 C_H and PZC scans; no IHP is represented.",
         "source_params": str(PARAMS_PATH.relative_to(ROOT)),
         "source_summary": str(SUMMARY_PATH.relative_to(ROOT)),
         "distance_lambda_max": DISTANCE_LAMBDA_MAX,
         "n_distance": N_DISTANCE,
-        "ihp_drop_fraction": IHP_DROP_FRACTION,
         "scans": [
             {
                 "group": spec.group,
@@ -577,16 +574,32 @@ def save_traceability_inputs(params: dict[str, Any], summary: dict[str, Any]) ->
             }
             for spec in SCAN_SPECS
         ],
-        "profile_formula": "side-average phi_s(y) = (RT/F) sum_n c_side,n A_n exp(-gamma_n y/lambda_D)",
+        "profile_formula": (
+            "side-average phi_s(y) = (RT/F) sum_n c_side,n A_n exp(-gamma_n y/lambda_D); "
+            "the compact-side guide line is a linear OHP tangent and does not introduce an IHP."
+        ),
         "visible_naming_note": "Use C_H in figure labels and output names; keep Cdl_* only as internal solver keys.",
     }
     write_json(CONFIG_OUT, config)
 
 
+def ohp_slope_mV_per_nm(case: dict[str, Any]) -> float:
+    distance_nm = np.asarray(case["distance_nm"], dtype=float)
+    phi = np.asarray(case["phi_profile_mV"], dtype=float)
+    if distance_nm.size < 2 or not distance_nm[1] > distance_nm[0]:
+        raise ValueError(f"{case['scan']} {case['case']}: cannot estimate OHP slope")
+    return float((phi[1] - phi[0]) / (distance_nm[1] - distance_nm[0]))
+
+
+def compact_tangent_start_mV(case: dict[str, Any]) -> float:
+    phi_rp = float(case["phi_RP_mean_mV"])
+    return phi_rp + ohp_slope_mV_per_nm(case) * (METAL_X1_NM - RP_X_NM)
+
+
 def profile_ylim(group_cases: list[dict[str, Any]]) -> tuple[float, float]:
     profile_values = [np.asarray(case["phi_profile_mV"], dtype=float) for case in group_cases]
-    metal_values = [np.asarray([float(case["metal_minus_pzc_mV"])], dtype=float) for case in group_cases]
-    values = np.concatenate(profile_values + metal_values)
+    compact_values = [np.asarray([compact_tangent_start_mV(case)], dtype=float) for case in group_cases]
+    values = np.concatenate(profile_values + compact_values)
     values = values[np.isfinite(values)]
     lo = float(np.min(values))
     hi = float(np.max(values))
@@ -700,19 +713,8 @@ def draw_profile_panel(
     draw_vector_gradient_background(ax, 0.0, x_max, y0, y1)
     ax.axvspan(METAL_X1_NM, 0.0, facecolor=COLORS["inner_layer"], edgecolor="none", zorder=0)
     draw_material_slab(ax, spec.side, y_limits)
-    ax.axvline(IHP_X_NM, color=COLORS["gray"], linewidth=0.8, linestyle=(0, (3, 2)), zorder=3)
     ax.axvline(RP_X_NM, color=COLORS["dark"], linewidth=0.85, zorder=3)
     ax.axhline(0.0, color=COLORS["dark"], linewidth=0.75, zorder=2)
-    ax.text(
-        IHP_X_NM - 0.06,
-        y1 - 0.08 * (y1 - y0),
-        "IHP",
-        ha="right",
-        va="top",
-        fontsize=6.6,
-        color=COLORS["gray"],
-        rotation=90,
-    )
     ax.text(
         0.18,
         y1 - 0.08 * (y1 - y0),
@@ -737,47 +739,16 @@ def draw_profile_panel(
         style = CASE_STYLES[str(case["case"])]
         distance_nm = np.asarray(case["distance_nm"], dtype=float)
         phi = np.asarray(case["phi_profile_mV"], dtype=float)
-        metal_y = float(case["metal_minus_pzc_mV"])
         phi_rp = float(case["phi_RP_mean_mV"])
-        phi_ihp = metal_y + IHP_DROP_FRACTION * (phi_rp - metal_y)
+        compact_start_y = compact_tangent_start_mV(case)
         ax.plot(
-            [METAL_X1_NM, IHP_X_NM],
-            [metal_y, phi_ihp],
+            [METAL_X1_NM, RP_X_NM],
+            [compact_start_y, phi_rp],
             color=style["color"],
             linestyle=style["linestyle"],
             linewidth=style["linewidth"],
             zorder=5,
         )
-        ax.plot(
-            [IHP_X_NM, RP_X_NM],
-            [phi_ihp, phi_rp],
-            color=style["color"],
-            linestyle=style["linestyle"],
-            linewidth=style["linewidth"],
-            zorder=5,
-        )
-        ax.scatter(
-            [METAL_X1_NM],
-            [metal_y],
-            s=18,
-            marker="s",
-            color=style["color"],
-            edgecolor="white",
-            linewidth=0.45,
-            zorder=6,
-        )
-        if case["case"] == "base":
-            ax.annotate(
-                r"$\phi_M$",
-                xy=(METAL_X1_NM, metal_y),
-                xytext=(-11, -2),
-                textcoords="offset points",
-                ha="right",
-                va="center",
-                fontsize=7.4,
-                color=COLORS["dark"],
-                zorder=8,
-            )
         ax.plot(
             distance_nm,
             phi,
@@ -839,7 +810,7 @@ def draw_profile_panel(
         zorder=7,
     )
     ax.set_title(spec.title, loc="left", fontsize=9.6, pad=5.0)
-    ax.set_xlabel(r"Distance from RP (nm)")
+    ax.set_xlabel(r"Distance from OHP/RP (nm)")
     if show_ylabel:
         ax.set_ylabel("Potential")
     else:

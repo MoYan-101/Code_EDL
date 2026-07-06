@@ -28,6 +28,7 @@
 - mixed potential 的根本判据是绝对电流平衡 `I_Au + I_Pd = 0`，不是分别按不同电极面积归一化后的 current density 相等。画 mixed-potential balance 图时优先用绝对电流；若使用 current density，必须明确是用同一个总 reactive area 做共同归一化，不能用 Au/Pd 各自面积归一化后找交点。
 - 之前 review 的结论：主线性方程符号大体自洽；闭式解和 root solve 在默认参数下能对到机器精度；均一边界条件会退化到解析常数解。
 - 重要 caveat：默认参数下 Debye-Huckel 适用性可能超限，self-check 曾给 `max |phi_tilde| = 5.4068`，高于默认阈值 1。
+- 重要数值 caveat：该模型的横向非均一边界用 Fourier/cosine modes 表示；如果 `N_modes` 和 `Nx` 相对总长度、Au/Pd 特征宽度或材料边界不够高，边界附近会出现 Gibbs/Fourier ringing，表观看起来像 `phi_RP`、局部浓度、局部过电位或局部电流的物理振荡。遇到长 support、大 gap 或边界附近震荡时，优先提高 `N_modes` 和 `Nx` 后重导图；不要先把这类小幅波纹解释成真实物理效应。
 - `compare_figure_parameters_and_methods.md` 的 baseline 已改为 `Figures/Figure_same_length_i0_alpha` 使用的参数，而不是原始 `results/20260528_111255/params.json` baseline：
   - 参数来源：`../Figures/Figure_same_length_i0_alpha/inputs/params_same_length_i0_alpha050_au25_pd25_20260528_111255.json`。
   - summary 来源：`../Figures/Figure_same_length_i0_alpha/inputs/summary_compare_same_length_i0_alpha050_au25_pd25_20260528_111255.csv`。
@@ -158,9 +159,13 @@
 ## Figures/Figure_3/ - 合格版 Figure 3 独立 panels
 
 - 当前合格版 Figure 3 独立 panel 脚本是 `Figures/Figure_3/make_figure_3_panels.py`。
-- 脚本固定读取可追溯输入：
-  - `Mixed_Potential_Electrical_Double_Layer/results/20260528_111255/params.json`
-  - `Mixed_Potential_Electrical_Double_Layer/results/20260528_111255/csv/summary_compare.csv`
+- 脚本固定以 `Mixed_Potential_Electrical_Double_Layer/results/20260528_111255/params.json` 为物理参数来源，但会在 Figure 3 脚本内覆盖数值分辨率：
+  - `N_modes = 960`
+  - `Nx = 5000`
+- Figure 3 的高分辨率可追溯输入写在：
+  - `Figures/Figure_3/inputs/params_figure_3_high_resolution_20260528_111255.json`
+  - `Figures/Figure_3/inputs/overrides_figure_3_high_resolution_20260528_111255.json`
+  - `Figures/Figure_3/inputs/summary_compare_figure_3_high_resolution_20260528_111255.csv/json`
 - 脚本复用 `Solve_Emix_updating` 的主线性模型逻辑：
   - `run_edl_comparison_pair(params, mode="FULL")`
   - `build_profiles_for_emix(...)`
@@ -170,6 +175,7 @@
 - 视觉规则：
   - `with EDL` 用亮暖色/red-orange family。
   - `w/o EDL` 用暗冷色/navy-blue family。
+  - 当前 Figure 3 字体已整体放大一档：坐标轴标题、tick、legend 和 panel f 标注均比原先更大。
   - panel c 保持 log y-scale。
   - panel b legend 放在 `center right` 且 `bbox_to_anchor=(0.98, 0.50)`，避免与曲线重合。
   - panel f 是 PZC + potential reference map，不是 BV+PZC current plot。
@@ -188,10 +194,11 @@
   - `figure_3_panel_f_pzc_potential_reference_map_20260528_111255.png/svg`
 - 已验证：
   - `python3 -m py_compile Figures/Figure_3/make_figure_3_panels.py` 通过。
-  - 运行脚本会重新计算并断言 `E_mix` 和 `i_mix_avg` 与 `summary_compare.csv` 一致。
+  - 运行脚本会用 `N_modes=960, Nx=5000` 重新计算 `E_mix` 和 `i_mix_avg`，并写出 Figure 3 自己的高分辨率 summary。
   - 输出数量为 6 PNG + 6 SVG + 0 PDF。
   - 抽查 panel c 和 panel f，图片内部没有 a-f panel 字母。
-- 运行脚本时仍会出现已知 caveat warning：`max |phi_tilde| = 5.40679` 超过 Debye-Huckel 阈值 1；这是当前结果目录的模型适用性提醒，不是导出失败。
+- 运行脚本时仍会出现已知 caveat warning：高分辨率下 `max |phi_tilde| ≈ 5.403` 超过 Debye-Huckel 阈值 1；这是当前结果目录的模型适用性提醒，不是导出失败。
+- Figure 3 从默认 `N_modes=80, Nx=1200` 改成 `N_modes=960, Nx=5000` 后，`E_mix_with` 约从 `0.6314371242 V` 到 `0.6315131472 V`，`i_mix_avg_with` 约从 `0.0544975443` 到 `0.0543763239 A/m^2`；主要目的是减少材料边界附近欠解析造成的表观振荡，而不是改变物理参数。
 
 ## Figures/Figrue_RP/ - Figure 3 条件下的 2D Phi_s/reactants 图
 
@@ -316,11 +323,15 @@
 - 一键入口：`Figures/Figure_same_length_i0_alpha/make_all_same_length_i0_alpha.py`。
 - 只导出 PNG/SVG，不导出 PDF；`Figure_scheme` 原有带 PZC 的 EDL vs w/o EDL BV 图，另有解释性 schematic PNG。
 - `Figure_3/` 当前图件细节：
+  - `Figure_3/` 现在用 `N_modes=960, Nx=5000` 高分辨率重算；物理参数仍是 same_length_i0_alpha baseline。
+  - `Figure_3/` 的高分辨率可追溯输入写在 `Figures/Figure_same_length_i0_alpha/inputs/params_figure_3_high_resolution_same_length_i0_alpha050_au25_pd25_20260528_111255.json`、`overrides_figure_3_high_resolution_same_length_i0_alpha050_au25_pd25_20260528_111255.json`、`summary_compare_figure_3_high_resolution_same_length_i0_alpha050_au25_pd25_20260528_111255.csv/json`。
+  - `Figure_3/` 字体已随基础 `Figures/Figure_3/` 整体放大一档；本目录定制的 panel c/e legend 也同步放大。
   - `figure_3_panel_b_reaction_plane_potential_*` 的 legend 已统一下移到图框右侧中线，避免与曲线重合。
   - `figure_3_panel_c_local_reactant_concentration_*` 标题为 `Local reactant concentration at RP`。
   - `figure_3_panel_d_local_overpotential_*` 标题为 `Local overpotential at RP`。
   - `figure_3_panel_e_local_current_density_*` 标题为 `Local current density at RP`，y 轴下界固定为 `-400`。
   - `figure_3_panel_f_pzc_potential_reference_map_*` 去掉左侧 `Equilibrium potentials` / `Mixed potential` / `PZC` lane 标签；PZC Pd 蓝色 `#5A90C8`，PZC Au 金色 `#E4C133`；横轴为 `Potential (V vs. RHE)`。
+  - 高分辨率 Figure 3 panel 的数值：`E_mix_with = 0.5980255004918 V`、`E_mix_no = 0.4670000000000001 V`、`i_mix_avg_with = 0.08374023183949203 A/m^2`、`i_mix_avg_no = 0.11756035407872442 A/m^2`、`max |phi_tilde| = 6.033459857051863`。
 - `Figure_scheme/edl_vs_no_edl_bv_mixed_potential_with_pzc_*` 横轴为 `Potential (V vs. RHE)`；`PZC Pd` 和 `PZC Au` 颜色规则跟 Figure 3 panel f 保持一致时优先复用同一色系。
 - EDL 使 `E_mix` 上升但 `i_mix` 下降的解释性 schematic：
   - 脚本：`Figures/Figure_same_length_i0_alpha/Figure_scheme/make_emix_up_imix_down_schematic_same_length_i0_alpha.py`

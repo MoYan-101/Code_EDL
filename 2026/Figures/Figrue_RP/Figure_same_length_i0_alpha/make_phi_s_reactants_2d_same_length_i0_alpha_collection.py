@@ -46,6 +46,8 @@ SUPPORT0_EXPECTED = {
     "i_mix_abs_no": (5.878017703936221e-11, 5e-18),
     "max_abs_phi_tilde_with_edl": (5.985937034969025, 5e-10),
 }
+FIGSIZE = (2.6, 7.45)
+PANEL_HSPACE = 0.36
 
 
 def ensure_dirs() -> None:
@@ -118,13 +120,13 @@ def unique_ticks(values: list[float]) -> list[float]:
 
 
 def plot_phi_s_reactants_case(data: Any) -> list[Path]:
-    fig = base.plt.figure(figsize=(5.8, 6.75))
+    fig = base.plt.figure(figsize=FIGSIZE)
     gs = fig.add_gridspec(
         nrows=4,
         ncols=2,
         width_ratios=(1.0, 0.038),
         height_ratios=(1.0, 1.0, 1.0, 0.12),
-        hspace=0.20,
+        hspace=PANEL_HSPACE,
         wspace=0.08,
     )
     axes = [fig.add_subplot(gs[i, 0]) for i in range(3)]
@@ -154,8 +156,8 @@ def plot_phi_s_reactants_case(data: Any) -> list[Path]:
         data.c_r1_norm,
         cmap="viridis",
         norm=base.log_norm(data.c_r1_norm),
-        cbar_label=r"$c_{\mathrm{R1}}/c_{\mathrm{bulk}}$",
-        title=r"Reactant R1 distribution",
+        cbar_label=r"$c_{\mathrm{Red1}}/c_{\mathrm{bulk}}$",
+        title=r"Reactant Red1 distribution",
         contour_levels=base.log_contour_levels(data.c_r1_norm),
     )
     base.add_heatmap(
@@ -165,8 +167,8 @@ def plot_phi_s_reactants_case(data: Any) -> list[Path]:
         data.c_o2_norm,
         cmap="viridis",
         norm=base.log_norm(data.c_o2_norm),
-        cbar_label=r"$c_{\mathrm{O2}}/c_{\mathrm{bulk}}$",
-        title=r"Reactant O2 distribution",
+        cbar_label=r"$c_{\mathrm{Ox2}}/c_{\mathrm{bulk}}$",
+        title=r"Reactant Ox2 distribution",
         show_xlabel=True,
         contour_levels=base.log_contour_levels(data.c_o2_norm),
     )
@@ -181,6 +183,9 @@ def plot_phi_s_reactants_case(data: Any) -> list[Path]:
     axes[-1].set_xticklabels([f"{tick:.0f}" for tick in xticks])
 
     base.add_material_lane(lane_ax, data)
+    for text in lane_ax.texts:
+        if text.get_text() == "support":
+            text.set_fontsize(5.8)
     fig.align_ylabels(axes)
     return base.save_figure(fig)
 

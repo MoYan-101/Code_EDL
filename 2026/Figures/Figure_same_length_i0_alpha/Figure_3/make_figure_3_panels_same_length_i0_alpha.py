@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import copy
+import csv
+import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -13,6 +15,39 @@ sys.path.insert(0, str(SAME_LENGTH_I0_ALPHA_DIR))
 
 import same_length_i0_alpha_common as common  # noqa: E402
 from Figures.Figure_3 import make_figure_3_panels as base  # noqa: E402
+
+
+TRACEABILITY_STEM = f"figure_3_high_resolution_{common.OUTPUT_TAG}"
+
+
+def load_high_resolution_params() -> dict[str, Any]:
+    params = common.load_same_length_i0_alpha_params()
+    params["N_modes"] = base.HIGH_RES_N_MODES
+    params["Nx"] = base.HIGH_RES_NX
+    return params
+
+
+def save_high_resolution_traceability(params: dict[str, Any], summary: dict[str, str]) -> None:
+    common.ensure_output_dirs()
+    overrides = {
+        **common.PARAM_OVERRIDES,
+        "source_params": str(common.BASE_PARAMS_PATH.relative_to(ROOT)),
+        "N_modes": base.HIGH_RES_N_MODES,
+        "Nx": base.HIGH_RES_NX,
+    }
+    with (common.INPUTS_DIR / f"params_{TRACEABILITY_STEM}.json").open("w", encoding="utf-8") as f:
+        json.dump(copy.deepcopy(params), f, indent=2, sort_keys=True)
+        f.write("\n")
+    with (common.INPUTS_DIR / f"overrides_{TRACEABILITY_STEM}.json").open("w", encoding="utf-8") as f:
+        json.dump(overrides, f, indent=2, sort_keys=True)
+        f.write("\n")
+    with (common.INPUTS_DIR / f"summary_compare_{TRACEABILITY_STEM}.csv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(summary.keys()))
+        writer.writeheader()
+        writer.writerow(summary)
+    with (common.INPUTS_DIR / f"summary_compare_{TRACEABILITY_STEM}.json").open("w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2, sort_keys=True)
+        f.write("\n")
 
 
 def plot_panel_c_same_length_i0_alpha(data: Any) -> list[Path]:
@@ -55,7 +90,7 @@ def plot_panel_c_same_length_i0_alpha(data: Any) -> list[Path]:
     base.style_axes(ax, "x (nm)", r"$c_i/c_{\mathrm{bulk}}$ (-)", "Local reactant concentration at RP")
     ax.legend(
         loc="upper right",
-        fontsize=6.9,
+        fontsize=7.9,
         handlelength=1.7,
         ncols=1,
         borderaxespad=0.0,
@@ -129,25 +164,23 @@ def plot_panel_e_same_length_i0_alpha(data: Any) -> list[Path]:
     if base.PANEL_E_YMIN is not None:
         _, ymax = ax.get_ylim()
         ax.set_ylim(base.PANEL_E_YMIN, ymax)
-    ax.legend(loc="upper right", fontsize=7.0, handlelength=1.8)
+    ax.legend(loc="upper right", fontsize=7.8, handlelength=1.8)
     return base.save_panel(fig, "figure_3_panel_e_local_current_density")
 
 
 def main() -> None:
     common.ensure_output_dirs()
-    params, summary = common.load_inputs_for_scripts()
-    common.assert_expected_values(summary)
+    params = load_high_resolution_params()
 
     def load_params() -> dict[str, Any]:
         return copy.deepcopy(params)
 
-    def load_summary() -> dict[str, str]:
-        return dict(summary)
-
     base.RESULT_ID = common.OUTPUT_TAG
     base.OUT_DIR = common.FIGURE_3_DIR
+    base.INPUTS_DIR = common.INPUTS_DIR
+    base.TRACEABILITY_STEM = TRACEABILITY_STEM
     base.load_params = load_params
-    base.load_summary = load_summary
+    base.save_traceability_inputs = save_high_resolution_traceability
     base.plot_panel_c = plot_panel_c_same_length_i0_alpha
     base.plot_panel_e = plot_panel_e_same_length_i0_alpha
     base.PANEL_D_TITLE = "Local overpotential at RP"

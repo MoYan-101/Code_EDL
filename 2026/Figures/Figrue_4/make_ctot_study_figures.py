@@ -36,7 +36,8 @@ OUTPUT_TAG = common.OUTPUT_TAG
 CURRENT_SCALE = 1.0e9
 CURRENT_UNIT = r"10$^{-3}$ uA"
 REPRESENTATIVE_C_M = (1.0e-2, 1.0, 1.0e3)
-HIGH_SALT_LIGHT_START_M = 10.0
+HIGH_SALT_LIGHT_START_M = 1.0
+EXTRA_CTOT_SCAN_VALUES_M = (10.0,)
 
 E_MIN = 0.40
 E_MAX = 0.63
@@ -117,10 +118,11 @@ def ensure_output_dirs() -> None:
 
 
 def ctot_scan_values() -> np.ndarray:
+    explicit_values = REPRESENTATIVE_C_M + (HIGH_SALT_LIGHT_START_M,) + EXTRA_CTOT_SCAN_VALUES_M
     values = np.concatenate(
         [
             np.logspace(-4, 3, 33),
-            np.asarray(REPRESENTATIVE_C_M + (HIGH_SALT_LIGHT_START_M,), dtype=float),
+            np.asarray(explicit_values, dtype=float),
         ]
     )
     return np.asarray(sorted(set(np.round(values, 14))), dtype=float)
@@ -199,9 +201,9 @@ def save_traceability_inputs(params: dict[str, Any], summary: dict[str, str], ro
 
 def setup_regime_background(ax: plt.Axes) -> None:
     for xmin, xmax, color in (
-        (1.0e-4, 7.0e-2, "#FDE9E0"),
-        (7.0e-2, 8.0, "#E9F1E8"),
-        (8.0, 1.0e3, "#E8EEF7"),
+        (1.0e-4, 1.0e-2, "#FDE9E0"),
+        (1.0e-2, 1.0, "#E9F1E8"),
+        (1.0, 1.0e3, "#E8EEF7"),
     ):
         ax.axvspan(xmin, xmax, color=color, alpha=0.55, linewidth=0, zorder=0)
 

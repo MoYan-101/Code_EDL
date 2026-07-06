@@ -44,6 +44,8 @@
     0.0,
     0.1
   ],
+  "heatmap_pzc_minus_span": 0.5,
+  "heatmap_pzc_plus_span": 0.3,
   "heatmap_pzc_span": 0.3,
   "it0_1": 0.0001852573885166257,
   "it0_1_pH_order": 0.0,

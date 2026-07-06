@@ -1,10 +1,9 @@
 {
-  "description": "Semi-quantitative EDL scheme for Figure 5 C_H and PZC scans.",
+  "description": "Semi-quantitative EDL scheme for Figure 5 C_H and PZC scans; no IHP is represented.",
   "distance_lambda_max": 5.0,
-  "ihp_drop_fraction": 0.68,
   "n_distance": 180,
   "output_tag": "same_length_i0_alpha050_au25_pd25_20260528_111255",
-  "profile_formula": "side-average phi_s(y) = (RT/F) sum_n c_side,n A_n exp(-gamma_n y/lambda_D)",
+  "profile_formula": "side-average phi_s(y) = (RT/F) sum_n c_side,n A_n exp(-gamma_n y/lambda_D); the compact-side guide line is a linear OHP tangent and does not introduce an IHP.",
   "scans": [
     {
       "baseline": 0.2,

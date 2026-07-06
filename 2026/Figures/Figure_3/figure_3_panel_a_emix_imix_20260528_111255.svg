@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-06-30T16:14:51.997677</dc:date>
+    <dc:date>2026-07-06T18:08:34.848090</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -43,26 +43,26 @@ z
     <g id="xtick_1">
      <g id="line2d_1">
       <defs>
-       <path id="mc0f4829931" d="M 0 0 
+       <path id="m14572e2b34" d="M 0 0 
 L 0 3.4 
 " style="stroke: #111827; stroke-width: 0.85"/>
       </defs>
       <g>
-       <use xlink:href="#mc0f4829931" x="70.742374" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#m14572e2b34" x="70.742374" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_1">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="74.969679" y="144.767305" transform="rotate(-45 74.969679 144.767305)">w/o EDL</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="75.639861" y="145.437488" transform="rotate(-45 75.639861 145.437488)">w/o EDL</text>
      </g>
     </g>
     <g id="xtick_2">
      <g id="line2d_2">
       <g>
-       <use xlink:href="#mc0f4829931" x="114.53578" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#m14572e2b34" x="114.53578" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_2">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="118.763086" y="144.767305" transform="rotate(-45 118.763086 144.767305)">with EDL</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="119.433268" y="145.437488" transform="rotate(-45 119.433268 145.437488)">with EDL</text>
      </g>
     </g>
    </g>
@@ -70,55 +70,55 @@ L 0 3.4
     <g id="ytick_1">
      <g id="line2d_3">
       <defs>
-       <path id="mafd6c4ceb9" d="M 0 0 
+       <path id="mdb4f48fbfc" d="M 0 0 
 L -3.4 0 
 " style="stroke: #111827; stroke-width: 0.85"/>
       </defs>
       <g>
-       <use xlink:href="#mafd6c4ceb9" x="46.656" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#mdb4f48fbfc" x="46.656" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_3">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="40.756" y="137.629156" transform="rotate(-0 40.756 137.629156)">0.0</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="40.756" y="138.103047" transform="rotate(-0 40.756 138.103047)">0.0</text>
      </g>
     </g>
     <g id="ytick_2">
      <g id="line2d_4">
       <g>
-       <use xlink:href="#mafd6c4ceb9" x="46.656" y="107.003286" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#mdb4f48fbfc" x="46.656" y="107.006613" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_4">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="40.756" y="109.992442" transform="rotate(-0 40.756 109.992442)">0.2</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="40.756" y="110.469659" transform="rotate(-0 40.756 110.469659)">0.2</text>
      </g>
     </g>
     <g id="ytick_3">
      <g id="line2d_5">
       <g>
-       <use xlink:href="#mafd6c4ceb9" x="46.656" y="79.366571" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#mdb4f48fbfc" x="46.656" y="79.373225" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_5">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="40.756" y="82.355727" transform="rotate(-0 40.756 82.355727)">0.4</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="40.756" y="82.836272" transform="rotate(-0 40.756 82.836272)">0.4</text>
      </g>
     </g>
     <g id="ytick_4">
      <g id="line2d_6">
       <g>
-       <use xlink:href="#mafd6c4ceb9" x="46.656" y="51.729857" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#mdb4f48fbfc" x="46.656" y="51.739838" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_6">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="40.756" y="54.719013" transform="rotate(-0 40.756 54.719013)">0.6</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="40.756" y="55.202885" transform="rotate(-0 40.756 55.202885)">0.6</text>
      </g>
     </g>
     <g id="text_7">
      <!-- $E_{\mathrm{mix}}$ (V) -->
-     <g style="fill: #111827" transform="translate(23.489281 97.61) rotate(-90)">
+     <g style="fill: #111827" transform="translate(21.264484 100.84) rotate(-90)">
       <text>
-       <tspan style="font: italic 8.5px 'Nimbus Sans'" x="0" y="-0.796875">E</tspan>
-       <tspan style="font: 5.95px 'Nimbus Sans'" x="5.669495 10.625848 11.946744" y="0.4558125000000004">mix</tspan>
-       <tspan style="font: 8.5px 'Nimbus Sans'" x="15.130525 17.493516 20.324006 25.993501" y="-0.796875"> (V)</tspan>
+       <tspan style="font: italic 10.4px 'Nimbus Sans'" x="0" y="-0.421875">E</tspan>
+       <tspan style="font: 7.28px 'Nimbus Sans'" x="6.930557 12.989334 14.604036" y="1.1108250000000002">mix</tspan>
+       <tspan style="font: 10.4px 'Nimbus Sans'" x="18.496205 21.3848 24.844883 31.775441" y="-0.421875"> (V)</tspan>
       </text>
      </g>
     </g>
@@ -126,10 +126,10 @@ L -3.4 0
    <g id="patch_3">
     <path d="M 58.042286 134.64 
 L 83.442462 134.64 
-L 83.442462 66.712807 
-L 58.042286 66.712807 
+L 83.442462 66.720984 
+L 58.042286 66.720984 
 z
-" clip-path="url(#p2d0d5aaf6d)" style="fill: #12355b; stroke: #272727; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pcc21d214c2)" style="fill: #12355b; stroke: #272727; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 101.835692 134.64 
@@ -137,7 +137,7 @@ L 127.235868 134.64
 L 127.235868 47.385763 
 L 101.835692 47.385763 
 z
-" clip-path="url(#p2d0d5aaf6d)" style="fill: #f26b38; stroke: #272727; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pcc21d214c2)" style="fill: #f26b38; stroke: #272727; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 46.656 134.64 
@@ -163,8 +163,8 @@ L 138.622154 31.68
     <!-- $E_{\mathrm{mix}}$ -->
     <g transform="translate(46.656 25.68)">
      <text>
-      <tspan style="font: italic 9.8px 'Nimbus Sans'" x="0" y="-0.859375">E</tspan>
-      <tspan style="font: 6.86px 'Nimbus Sans'" x="6.534515 12.247073 13.769501" y="0.5848999999999993">mix</tspan>
+      <tspan style="font: italic 11px 'Nimbus Sans'" x="0" y="-0.984375">E</tspan>
+      <tspan style="font: 7.7px 'Nimbus Sans'" x="7.337006 13.751102 15.460503" y="0.6367499999999993">mix</tspan>
      </text>
     </g>
    </g>
@@ -183,21 +183,21 @@ z
     <g id="xtick_3">
      <g id="line2d_7">
       <g>
-       <use xlink:href="#mc0f4829931" x="217.88822" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#m14572e2b34" x="217.88822" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_9">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="222.115525" y="144.767305" transform="rotate(-45 222.115525 144.767305)">w/o EDL</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="222.785708" y="145.437488" transform="rotate(-45 222.785708 145.437488)">w/o EDL</text>
      </g>
     </g>
     <g id="xtick_4">
      <g id="line2d_8">
       <g>
-       <use xlink:href="#mc0f4829931" x="261.681626" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#m14572e2b34" x="261.681626" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_10">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="265.908932" y="144.767305" transform="rotate(-45 265.908932 144.767305)">with EDL</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="266.579114" y="145.437488" transform="rotate(-45 266.579114 145.437488)">with EDL</text>
      </g>
     </g>
    </g>
@@ -205,51 +205,51 @@ z
     <g id="ytick_5">
      <g id="line2d_9">
       <g>
-       <use xlink:href="#mafd6c4ceb9" x="193.801846" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#mdb4f48fbfc" x="193.801846" y="134.64" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_11">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="187.901846" y="137.629156" transform="rotate(-0 187.901846 137.629156)">0</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="187.901846" y="138.103047" transform="rotate(-0 187.901846 138.103047)">0</text>
      </g>
     </g>
     <g id="ytick_6">
      <g id="line2d_10">
       <g>
-       <use xlink:href="#mafd6c4ceb9" x="193.801846" y="102.618654" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#mdb4f48fbfc" x="193.801846" y="102.547269" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_12">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="187.901846" y="105.60781" transform="rotate(-0 187.901846 105.60781)">20</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="187.901846" y="106.010316" transform="rotate(-0 187.901846 106.010316)">20</text>
      </g>
     </g>
     <g id="ytick_7">
      <g id="line2d_11">
       <g>
-       <use xlink:href="#mafd6c4ceb9" x="193.801846" y="70.597307" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#mdb4f48fbfc" x="193.801846" y="70.454538" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_13">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="187.901846" y="73.586463" transform="rotate(-0 187.901846 73.586463)">40</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="187.901846" y="73.917584" transform="rotate(-0 187.901846 73.917584)">40</text>
      </g>
     </g>
     <g id="ytick_8">
      <g id="line2d_12">
       <g>
-       <use xlink:href="#mafd6c4ceb9" x="193.801846" y="38.575961" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
+       <use xlink:href="#mdb4f48fbfc" x="193.801846" y="38.361806" style="fill: #111827; stroke: #111827; stroke-width: 0.85"/>
       </g>
      </g>
      <g id="text_14">
-      <text style="fill: #111827; font: 8.2px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="187.901846" y="41.565117" transform="rotate(-0 187.901846 41.565117)">60</text>
+      <text style="fill: #111827; font: 9.5px 'Helvetica', 'Nimbus Sans', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end" x="187.901846" y="41.824853" transform="rotate(-0 187.901846 41.824853)">60</text>
      </g>
     </g>
     <g id="text_15">
      <!-- $\bar{i}_{\mathrm{mix}}$ ($10^{-3}$ A/m$^2$) -->
-     <g style="fill: #111827" transform="translate(172.914471 111.6775) rotate(-90)">
+     <g style="fill: #111827" transform="translate(171.051034 118.052) rotate(-90)">
       <text>
-       <tspan style="font: 8.5px 'cmr10'" x="-1.122002" y="-2.984375">¹</tspan>
-       <tspan style="font: italic 8.5px 'Nimbus Sans'" x="0" y="-0.4375">i</tspan>
-       <tspan style="font: 5.95px 'Nimbus Sans'" x="1.960067 6.916421 8.237316 26.139648 29.614451 50.680487" y="0.8151875000000004 0.8151875000000004 0.8151875000000004 -3.3604374999999997 -3.3604374999999997 -3.3604374999999997">mix−32</tspan>
-       <tspan style="font: 8.5px 'Nimbus Sans'" x="11.421097 13.784089 16.614579 21.340577 33.131431 35.494422 41.163917 43.526908 54.197467" y="-0.4375"> (10 A/m)</tspan>
+       <tspan style="font: 10.4px 'cmr10'" x="-1.142071" y="-3.875">¹</tspan>
+       <tspan style="font: italic 10.4px 'Nimbus Sans'" x="0" y="-0.7624999999999993">i</tspan>
+       <tspan style="font: 7.28px 'Nimbus Sans'" x="2.396124 8.454901 10.069603 31.95424 36.201932 61.953967" y="0.7702000000000009 0.7702000000000009 0.7702000000000009 -4.338799999999999 -4.338799999999999 -4.338799999999999">mix−32</tspan>
+       <tspan style="font: 10.4px 'Nimbus Sans'" x="13.961772 16.850367 20.31045 26.087642 40.501415 43.390011 50.320568 53.209164 66.253451" y="-0.7624999999999993"> (10 A/m)</tspan>
       </text>
      </g>
     </g>
@@ -257,10 +257,10 @@ z
    <g id="patch_10">
     <path d="M 205.188132 134.64 
 L 230.588308 134.64 
-L 230.588308 68.141397 
-L 205.188132 68.141397 
+L 230.588308 67.993153 
+L 205.188132 67.993153 
 z
-" clip-path="url(#pbd114c53d9)" style="fill: #12355b; stroke: #272727; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#p74ec57903e)" style="fill: #12355b; stroke: #272727; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_11">
     <path d="M 248.981538 134.64 
@@ -268,7 +268,7 @@ L 274.381714 134.64
 L 274.381714 47.385763 
 L 248.981538 47.385763 
 z
-" clip-path="url(#pbd114c53d9)" style="fill: #f26b38; stroke: #272727; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#p74ec57903e)" style="fill: #f26b38; stroke: #272727; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_12">
     <path d="M 193.801846 134.64 
@@ -294,18 +294,18 @@ L 285.768 31.68
     <!-- $i_{\mathrm{mix}}$ -->
     <g transform="translate(193.801846 25.68)">
      <text>
-      <tspan style="font: italic 9.8px 'Nimbus Sans'" x="0" y="-0.859375">i</tspan>
-      <tspan style="font: 6.86px 'Nimbus Sans'" x="2.174896 7.887454 9.409882" y="0.5848999999999993">mix</tspan>
+      <tspan style="font: italic 11px 'Nimbus Sans'" x="0" y="-0.984375">i</tspan>
+      <tspan style="font: 7.7px 'Nimbus Sans'" x="2.442001 8.856097 10.565498" y="0.6367499999999993">mix</tspan>
      </text>
     </g>
    </g>
   </g>
  </g>
  <defs>
-  <clipPath id="p2d0d5aaf6d">
+  <clipPath id="pcc21d214c2">
    <rect x="46.656" y="31.68" width="91.966154" height="102.96"/>
   </clipPath>
-  <clipPath id="pbd114c53d9">
+  <clipPath id="p74ec57903e">
    <rect x="193.801846" y="31.68" width="91.966154" height="102.96"/>
   </clipPath>
  </defs>

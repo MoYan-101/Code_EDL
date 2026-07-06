@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import copy
 import json
 import re
 import sys
@@ -20,8 +21,8 @@ RESULT_ID = "20260528_111255"
 SOLVER_DIR = ROOT / "Mixed_Potential_Electrical_Double_Layer"
 RESULT_DIR = SOLVER_DIR / "results" / RESULT_ID
 PARAMS_PATH = RESULT_DIR / "params.json"
-SUMMARY_PATH = RESULT_DIR / "csv" / "summary_compare.csv"
 OUT_DIR = Path(__file__).resolve().parent
+INPUTS_DIR = OUT_DIR / "inputs"
 
 sys.path.insert(0, str(SOLVER_DIR))
 import Solve_Emix_updating as solver  # noqa: E402
@@ -49,6 +50,9 @@ PANEL_F_FIGSIZE = (4.20, 3.25)
 PANEL_D_TITLE = "Local overpotential"
 PANEL_E_TITLE = "Local current density"
 PANEL_E_YMIN: float | None = None
+HIGH_RES_N_MODES = 960
+HIGH_RES_NX = 5000
+TRACEABILITY_STEM = f"figure_3_high_resolution_{RESULT_ID}"
 
 
 def units_to_parentheses(label: str) -> str:
@@ -85,7 +89,7 @@ def apply_style() -> None:
         {
             "font.family": "sans-serif",
             "font.sans-serif": ["Helvetica", "Nimbus Sans", "Arial", "DejaVu Sans", "sans-serif"],
-            "font.size": 8.5,
+            "font.size": 9.8,
             "axes.spines.top": True,
             "axes.spines.right": True,
             "axes.linewidth": 0.9,
@@ -129,44 +133,85 @@ def make_single_axis_panel() -> tuple[plt.Figure, plt.Axes]:
 def load_params() -> dict[str, Any]:
     with PARAMS_PATH.open("r", encoding="utf-8") as f:
         params_data = json.load(f)
-    return solver.apply_param_overrides(solver.default_params(), params_data, reset_lambda_D=False)
+    params = solver.apply_param_overrides(solver.default_params(), params_data, reset_lambda_D=False)
+    params["N_modes"] = HIGH_RES_N_MODES
+    params["Nx"] = HIGH_RES_NX
+    return params
 
 
-def load_summary() -> dict[str, str]:
-    with SUMMARY_PATH.open("r", encoding="utf-8") as f:
-        return next(csv.DictReader(f))
+def summary_from_pair(pair: dict[str, Any]) -> dict[str, str]:
+    res_edl = pair["with_edl"]
+    res_no = pair["no_edl"]
+    comparison = pair["comparison"]
+    values: dict[str, Any] = {
+        "pH": res_edl.get("pH"),
+        "pH_ref": res_edl.get("pH_ref"),
+        "delta_pH": res_edl.get("delta_pH"),
+        "E1_eq_eff": res_edl.get("E1_eq_eff"),
+        "E2_eq_eff": res_edl.get("E2_eq_eff"),
+        "it0_1_eff": res_edl.get("it0_1_eff"),
+        "it0_2_eff": res_edl.get("it0_2_eff"),
+        "E_mix_with": res_edl.get("E_mix"),
+        "i_mix_with": res_edl.get("i_mix"),
+        "i_mix_norm_with": res_edl.get("i_mix"),
+        "i_mix_phys_with": res_edl.get("i_mix_phys_A_per_m"),
+        "i_mix_abs_with": res_edl.get("i_mix_abs_A"),
+        "i_mix_avg_with": res_edl.get("i_mix_avg_A_per_m2"),
+        "E_mix_no": res_no.get("E_mix"),
+        "i_mix_no": res_no.get("i_mix"),
+        "i_mix_norm_no": res_no.get("i_mix"),
+        "i_mix_phys_no": res_no.get("i_mix_phys_A_per_m"),
+        "i_mix_abs_no": res_no.get("i_mix_abs_A"),
+        "i_mix_avg_no": res_no.get("i_mix_avg_A_per_m2"),
+        "delta_E_mix": comparison.get("delta_E_mix"),
+        "delta_i_mix_avg_A_per_m2": comparison.get("delta_i_mix_avg_A_per_m2"),
+        "ratio_i_mix_avg": comparison.get("ratio_i_mix_avg"),
+        "pct_i_mix_avg": comparison.get("pct_i_mix_avg"),
+        "ratio_i_mix": comparison.get("ratio_i_mix"),
+        "pct_i_mix": comparison.get("pct_i_mix"),
+        "ratio_i_mix_phys": comparison.get("ratio_i_mix_phys"),
+        "pct_i_mix_phys": comparison.get("pct_i_mix_phys"),
+        "delta_i_mix_abs_A": comparison.get("delta_i_mix_abs_A"),
+        "ratio_i_mix_abs": comparison.get("ratio_i_mix_abs"),
+        "pct_i_mix_abs": comparison.get("pct_i_mix_abs"),
+        "max_abs_phi_tilde_with_edl": res_edl.get("max_abs_phi_tilde"),
+        "debye_huckel_ok_with_edl": res_edl.get("debye_huckel_ok"),
+        "mode": comparison.get("mode", "FULL"),
+    }
+    return {key: "" if value is None else str(value) for key, value in values.items()}
 
 
-def assert_close(label: str, actual: float, expected: float, atol: float) -> None:
-    if abs(actual - expected) > atol:
-        raise ValueError(f"{label}: recomputed {actual:.15g} differs from summary {expected:.15g}")
-
-
-def validate_against_summary(res_edl: dict[str, Any], res_no: dict[str, Any], summary: dict[str, str]) -> None:
-    assert_close("E_mix_with", float(res_edl["E_mix"]), float(summary["E_mix_with"]), 1e-10)
-    assert_close("E_mix_no", float(res_no["E_mix"]), float(summary["E_mix_no"]), 1e-10)
-    assert_close(
-        "i_mix_avg_with",
-        float(res_edl["i_mix_avg_A_per_m2"]),
-        float(summary["i_mix_avg_with"]),
-        1e-8,
-    )
-    assert_close(
-        "i_mix_avg_no",
-        float(res_no["i_mix_avg_A_per_m2"]),
-        float(summary["i_mix_avg_no"]),
-        1e-8,
-    )
+def save_traceability_inputs(params: dict[str, Any], summary: dict[str, str]) -> None:
+    INPUTS_DIR.mkdir(parents=True, exist_ok=True)
+    params_to_save = copy.deepcopy(params)
+    overrides = {
+        "source_params": str(PARAMS_PATH.relative_to(ROOT)),
+        "N_modes": HIGH_RES_N_MODES,
+        "Nx": HIGH_RES_NX,
+    }
+    with (INPUTS_DIR / f"params_{TRACEABILITY_STEM}.json").open("w", encoding="utf-8") as f:
+        json.dump(params_to_save, f, indent=2, sort_keys=True)
+        f.write("\n")
+    with (INPUTS_DIR / f"overrides_{TRACEABILITY_STEM}.json").open("w", encoding="utf-8") as f:
+        json.dump(overrides, f, indent=2, sort_keys=True)
+        f.write("\n")
+    with (INPUTS_DIR / f"summary_compare_{TRACEABILITY_STEM}.csv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(summary.keys()))
+        writer.writeheader()
+        writer.writerow(summary)
+    with (INPUTS_DIR / f"summary_compare_{TRACEABILITY_STEM}.json").open("w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2, sort_keys=True)
+        f.write("\n")
 
 
 def build_data() -> Figure3Data:
     params = load_params()
-    summary = load_summary()
 
     pair = solver.run_edl_comparison_pair(params, mode="FULL")
     res_edl = pair["with_edl"]
     res_no = pair["no_edl"]
-    validate_against_summary(res_edl, res_no, summary)
+    summary = summary_from_pair(pair)
+    save_traceability_inputs(params, summary)
 
     prof_edl, derived_edl = solver.build_profiles_for_emix(params, float(res_edl["E_mix"]), use_edl=True)
     prof_no, derived_no = solver.build_profiles_for_emix(params, float(res_no["E_mix"]), use_edl=False)
@@ -241,8 +286,10 @@ def style_axes(ax: plt.Axes, xlabel: str, ylabel: str, title: str) -> None:
     ax.set_facecolor("none")
     ax.set_xlabel(units_to_parentheses(xlabel))
     ax.set_ylabel(units_to_parentheses(ylabel))
-    ax.set_title(title, loc="left", pad=6, fontsize=9.8, fontweight="normal")
-    ax.tick_params(length=3.4, width=0.85, pad=2.5, labelsize=8.2)
+    ax.xaxis.label.set_size(10.4)
+    ax.yaxis.label.set_size(10.4)
+    ax.set_title(title, loc="left", pad=6, fontsize=11.0, fontweight="normal")
+    ax.tick_params(length=3.4, width=0.85, pad=2.5, labelsize=9.5)
     for spine in ("left", "bottom", "top", "right"):
         ax.spines[spine].set_visible(True)
         ax.spines[spine].set_linewidth(0.9)
@@ -319,7 +366,7 @@ def plot_panel_b(data: Figure3Data) -> list[Path]:
     ax.plot(data.x_nm, data.phi_rp_no, color=COLORS["without"], linewidth=1.8, label="w/o EDL", zorder=2)
     add_boundaries(ax, data)
     style_axes(ax, "x (nm)", r"$\phi_{\mathrm{RP}}(x)$ (V)", "Reaction-plane potential")
-    ax.legend(loc="center right", bbox_to_anchor=(0.98, 0.50), fontsize=8.0, handlelength=2.0)
+    ax.legend(loc="center right", bbox_to_anchor=(0.98, 0.50), fontsize=8.9, handlelength=2.0)
     return save_panel(fig, "figure_3_panel_b_reaction_plane_potential")
 
 
@@ -361,7 +408,7 @@ def plot_panel_c(data: Figure3Data) -> list[Path]:
     )
     ax.set_ylim(float(np.min(positive)) / 1.25, float(np.max(positive)) * 8.0)
     style_axes(ax, "x (nm)", r"$c_i/c_{\mathrm{bulk}}$ (-)", "Local reactant concentration")
-    ax.legend(loc="upper right", fontsize=7.1, handlelength=1.7)
+    ax.legend(loc="upper right", fontsize=7.9, handlelength=1.7)
     return save_panel(fig, "figure_3_panel_c_local_reactant_concentration")
 
 
@@ -372,7 +419,7 @@ def plot_panel_d(data: Figure3Data) -> list[Path]:
     add_boundaries(ax, data)
     style_axes(ax, "x (nm)", solver._plot_axis_label("overpotential"), PANEL_D_TITLE)
     finite_ylim(ax, data.eta_edl, data.eta_no, pad_frac=0.08)
-    ax.legend(loc="center right", fontsize=8.0, handlelength=2.0)
+    ax.legend(loc="center right", fontsize=8.9, handlelength=2.0)
     return save_panel(fig, "figure_3_panel_d_local_overpotential")
 
 
@@ -413,7 +460,7 @@ def plot_panel_e(data: Figure3Data) -> list[Path]:
     if PANEL_E_YMIN is not None:
         _, ymax = ax.get_ylim()
         ax.set_ylim(PANEL_E_YMIN, ymax)
-    ax.legend(loc="upper right", fontsize=7.0, handlelength=1.8)
+    ax.legend(loc="upper right", fontsize=7.8, handlelength=1.8)
     return save_panel(fig, "figure_3_panel_e_local_current_density")
 
 
@@ -441,7 +488,7 @@ def add_reference_marker(
         f"{label}\n{fmt_v(x)}",
         ha="center",
         va="bottom" if text_y_offset >= 0 else "top",
-        fontsize=7.7,
+        fontsize=8.5,
         color=color,
         linespacing=1.1,
     )
@@ -503,10 +550,11 @@ def plot_panel_f(data: Figure3Data) -> list[Path]:
     ax.set_xlim(xmin - 0.02, xmax + 0.02)
     ax.set_ylim(-0.92, 0.80)
     ax.set_xlabel("Potential (V vs. RHE)")
+    ax.xaxis.label.set_size(10.6)
     ax.set_yticks([])
     ax.set_xticks([0.0, 0.25, 0.50, 0.75, 1.0])
-    ax.tick_params(axis="x", length=3.4, width=0.85, labelsize=8.2)
-    ax.set_title("Potential reference map", loc="left", fontsize=9.8, pad=6, fontweight="normal")
+    ax.tick_params(axis="x", length=3.4, width=0.85, labelsize=9.5)
+    ax.set_title("Potential reference map", loc="left", fontsize=11.0, pad=6, fontweight="normal")
     for side in ("left", "right", "top"):
         ax.spines[side].set_visible(False)
     ax.spines["bottom"].set_position(("data", -0.72))
@@ -530,11 +578,12 @@ def main() -> None:
     if len(saved) != 12:
         raise RuntimeError(f"Expected 12 exported files, got {len(saved)}")
 
-    print("Verified recomputed values against summary_compare.csv")
+    print(f"Using high-resolution Figure 3 settings: N_modes = {HIGH_RES_N_MODES}, Nx = {HIGH_RES_NX}")
     print(f"E_mix_with = {float(data.res_edl['E_mix']):.15g} V")
     print(f"E_mix_no = {float(data.res_no['E_mix']):.15g} V")
     print(f"i_mix_avg_with = {float(data.res_edl['i_mix_avg_A_per_m2']):.15g} A/m^2")
     print(f"i_mix_avg_no = {float(data.res_no['i_mix_avg_A_per_m2']):.15g} A/m^2")
+    print(f"Saved traceability inputs to {INPUTS_DIR}")
     print("Saved Figure 3 panels:")
     for path in saved:
         print(f"  {path}")
